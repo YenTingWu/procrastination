@@ -23,12 +23,19 @@ export class User extends BaseEntity {
   @Column('text')
   email: string;
 
-  @Column('text')
+  @Column('boolean')
+  isSocialLogin: boolean;
+
+  /**
+   * If the user is created by social login, do not access the user login by manual
+   */
+
+  @Column('text', { default: null })
   password: string;
 
   @Column('text')
   avatar: string;
 
-  @Column('int')
+  @Column('int', { default: 0 })
   tokenVersion: number;
 }
