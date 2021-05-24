@@ -11,6 +11,7 @@ import { EventCategory } from './EventCategory';
 export class EventCategoryItem extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
   @Column({ type: 'varchar' })
   name: string;
 

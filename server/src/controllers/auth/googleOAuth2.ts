@@ -1,6 +1,4 @@
 import { google } from 'googleapis';
-import { Like } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import { User } from '../../entity/User';
 import {
   GOOGLE_CLIENT_ID,
@@ -8,23 +6,8 @@ import {
   GOOGLE_REDIRECT_URL,
   LANDING_PAGE_URL,
 } from '../../config';
-
-/**
- * ### getValidName
- * If the name exists in the database, return a displayName with uuid
- * If not, return the original name
- * @param fullName
- * @returns booleans
- */
-
-async function getValidName(fullName: string): Promise<string> {
-  const users = await User.find({
-    insensitiveName: Like(`%${fullName.toLowerCase()}%`),
-  });
-
-  if (users.length) return `${fullName}${uuidv4()}`;
-  return fullName;
-}
+import { SOCIAL_LOGIN_TYPE } from '../../types';
+import { getValidName } from '../../lib/getValidName';
 
 let oauth2Client = new google.auth.OAuth2(
   GOOGLE_CLIENT_ID,
@@ -88,7 +71,7 @@ export const getGoogleAuthenticationCallback = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    const { picture, name } = userInfo.data;
+    const { picture, name, id } = userInfo.data;
     const validName = await getValidName(name);
 
     let newUser = new User();
@@ -96,12 +79,15 @@ export const getGoogleAuthenticationCallback = async (req, res) => {
     newUser.email = email;
     newUser.displayName = validName;
     newUser.insensitiveName = validName.toLowerCase();
-    newUser.password = '';
-    newUser.isSocialLogin = true;
-
+    newUser.googleId = id;
+    newUser.socialLoginType = SOCIAL_LOGIN_TYPE.GOOGLE;
     await User.insert(newUser);
   }
 
+  /** TODO:
+   * Client-side accessToken and refreshToken should be created by procrastination server,
+   * instead of google Oauth2 server
+   */
   return res.redirect(
     `${LANDING_PAGE_URL}/?accessToken=${accessToken}&refreshToken=${refreshToken}`
   );

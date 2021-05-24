@@ -5,6 +5,7 @@ import {
   Column,
   BaseEntity,
 } from 'typeorm';
+import { SOCIAL_LOGIN_TYPE } from '../types';
 
 @Entity('users')
 @Unique(['displayName'])
@@ -23,8 +24,18 @@ export class User extends BaseEntity {
   @Column('text')
   email: string;
 
-  @Column('boolean')
-  isSocialLogin: boolean;
+  /**
+   * Not sure if enum's default value can be NULL or not
+   */
+
+  @Column('enum', { enum: SOCIAL_LOGIN_TYPE, default: null })
+  socialLoginType: SOCIAL_LOGIN_TYPE;
+
+  @Column('text', { default: null })
+  twitterId: string;
+
+  @Column('text', { default: null })
+  googleId: string;
 
   /**
    * If the user is created by social login, do not access the user login by manual
@@ -33,7 +44,7 @@ export class User extends BaseEntity {
   @Column('text', { default: null })
   password: string;
 
-  @Column('text')
+  @Column('text', { default: null })
   avatar: string;
 
   @Column('int', { default: 0 })

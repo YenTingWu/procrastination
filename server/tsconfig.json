@@ -10,6 +10,10 @@
     "sourceMap": true,
     // import package without * as
     "esModuleInterop": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@myTypes": ["types.ts"]
+    }
   }
 }
