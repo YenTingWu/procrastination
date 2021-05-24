@@ -1,4 +1,4 @@
-export enum SOCIAL_LOGIN_TYPE {
-  GOOGLE = 'google',
-  TWITTER = 'twitter',
-}
+// export enum SOCIAL_LOGIN_TYPE {
+//   GOOGLE = 'google',
+//   TWITTER = 'twitter',
+// }

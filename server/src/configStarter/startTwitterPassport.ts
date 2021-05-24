@@ -8,7 +8,6 @@ import {
 } from '../config';
 import { User } from '../entity/User';
 import { getValidName } from '../lib/getValidName';
-import { SOCIAL_LOGIN_TYPE } from '../types';
 
 /**
  * ## startTwitterPassport
@@ -56,7 +55,7 @@ export default function startTwitterPassport(
             displayName: validName,
             avatar: photos[0].value || null,
             insensitiveName: validName.toLowerCase(),
-            socialLoginType: SOCIAL_LOGIN_TYPE.TWITTER,
+            isVerifiedEmail: true,
           }).save();
         } else if (!user.twitterId) {
           user.twitterId = id;
@@ -65,7 +64,7 @@ export default function startTwitterPassport(
           // User exist and do have twitterId
         }
 
-        return done(null, { id: user.id });
+        return done(null, { _user: user });
       }
     )
   );

@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
  * If the name exists in the database, return a displayName with uuid
  * If not, return the original name
  * @param fullName
- * @returns booleans
+ * @returns validName string
  */
 
 export async function getValidName(fullName: string): Promise<string> {
