@@ -1,5 +1,0 @@
-{
-  "name": "next-18next.config.js",
-  "browser": "./index.ts",
-  "main": "./node.ts"
-}
