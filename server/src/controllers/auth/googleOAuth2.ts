@@ -25,7 +25,7 @@ let oauth2Client = new google.auth.OAuth2(
  * @returns redirect to google auth page
  */
 
-export const getGoogleAuthentication = (_req: Request, res: Response) => {
+export const postGoogleAuthentication = (_req: Request, res: Response) => {
   let scopes = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
@@ -35,7 +35,9 @@ export const getGoogleAuthentication = (_req: Request, res: Response) => {
     scope: scopes,
   });
 
-  return res.redirect(url);
+  res.header('Access-Control-Allow-Origin', '*');
+
+  return res.json({ url });
 };
 
 /**
@@ -70,6 +72,7 @@ export const getGoogleAuthenticationCallback = async (
 
   const { email, id } = userInfo.data;
   let user = await User.findOne({ email });
+  console.log(user);
 
   if (!user) {
     const { picture, name, verified_email } = userInfo.data;
@@ -82,7 +85,7 @@ export const getGoogleAuthenticationCallback = async (
       insensitiveName: validName.toLocaleLowerCase(),
       googleId: id,
       isVerifiedEmail: verified_email,
-    });
+    }).save();
   } else if (!user.googleId) {
     user.googleId = id;
     await user.save();

@@ -4,7 +4,7 @@ import { createAccessToken, createRefreshToken } from '../../lib/createAuth';
 import { CLIENT_BASE_URL } from '../../config';
 import { User } from 'entity/User';
 
-export const getTwitterOAuth: (
+export const postTwitterOAuth: (
   req: Request,
   res: Response,
   next?: NextFunction

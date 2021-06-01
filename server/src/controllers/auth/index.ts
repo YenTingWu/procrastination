@@ -2,7 +2,9 @@ import { Request, Response } from 'express';
 import { compare, hash } from 'bcrypt';
 import { User } from '../../entity/User';
 import { createAccessToken, createRefreshToken } from '../../lib/createAuth';
-import { getValidName } from '../../lib/getValidName';
+// import { getValidName } from '../../lib/getValidName';
+import { v4 as uuidv4 } from 'uuid';
+import { CLIENT_BASE_URL } from '../../config';
 
 /**
  * ## postTraditionalLogin
@@ -27,12 +29,18 @@ export const postTraditionalLogin = async (req: Request, res: Response) => {
     throw new Error('Unable to confirm your email or password');
   }
 
-  res.cookie('@procrastination/jid', createRefreshToken(user), {
-    httpOnly: true,
-    path: '/auth',
-  });
+  // res.cookie('@procrastination/jid', createRefreshToken(user), {
+  //   httpOnly: true,
+  //   path: '/auth',
+  // });
 
-  return res.send({ ok: true, accessToken: createAccessToken(user) });
+  return res
+    .status(302)
+    .redirect(
+      `${CLIENT_BASE_URL}?accessToken=${createAccessToken(
+        user
+      )}&refreshToken=${createRefreshToken(user)}`
+    );
 };
 
 /**
@@ -42,9 +50,9 @@ export const postTraditionalLogin = async (req: Request, res: Response) => {
  */
 
 export const postTraditionalRegister = async (req: Request, res: Response) => {
-  const { email, password, displayName } = req.query;
+  const { email, password } = req.query;
 
-  if (!email || !password || !displayName) {
+  if (!email || !password) {
     throw new Error(
       'Unable to sign up with the email address, password or name'
     );
@@ -61,14 +69,14 @@ export const postTraditionalRegister = async (req: Request, res: Response) => {
   }
   const saltRound = 12;
   const hashedPassword = await hash(password as string, saltRound);
-  const validName = await getValidName(displayName as string);
+  const validName = `user${uuidv4()}`;
 
   try {
     user = await User.create({
       email: email as string,
       password: hashedPassword,
       displayName: validName,
-      insensitiveName: validName.toLocaleLowerCase(),
+      insensitiveName: validName,
     }).save();
   } catch (err) {
     console.error(err);
@@ -78,10 +86,16 @@ export const postTraditionalRegister = async (req: Request, res: Response) => {
     );
   }
 
-  res.cookie('@procrastination/jid', createRefreshToken(user), {
-    httpOnly: true,
-    path: '/auth',
-  });
+  // res.cookie('@procrastination/jid', createRefreshToken(user), {
+  //   httpOnly: true,
+  //   path: '/auth',
+  // });
 
-  return res.send({ ok: true, accessToken: createAccessToken(user) });
+  return res
+    .status(302)
+    .redirect(
+      `${CLIENT_BASE_URL}?accessToken=${createAccessToken(
+        user
+      )}&refreshToken=${createRefreshToken(user)}`
+    );
 };

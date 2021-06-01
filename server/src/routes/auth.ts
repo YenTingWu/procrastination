@@ -4,11 +4,11 @@ import {
   postTraditionalRegister,
 } from '../controllers/auth';
 import {
-  getGoogleAuthentication,
+  postGoogleAuthentication,
   getGoogleAuthenticationCallback,
 } from '../controllers/auth/googleOAuth2';
 import {
-  getTwitterOAuth,
+  postTwitterOAuth,
   getTwitterOAuthCallback,
   getRedirectBackToEntryPage,
 } from '../controllers/auth/twitterOauth';
@@ -33,8 +33,8 @@ const router = Router();
 
 router.post('/login', postTraditionalLogin);
 router.post('/register', postTraditionalRegister);
-router.get('/twitter/web', getTwitterOAuth);
-router.get('/google/web', getGoogleAuthentication);
+router.post('/twitter/web', postTwitterOAuth);
+router.post('/google/web', postGoogleAuthentication);
 
 /** TODO:
  * create tokens for client-Oauth after twitter auth callback
