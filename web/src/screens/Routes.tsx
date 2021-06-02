@@ -9,10 +9,6 @@ import {
 import { Calendar } from './Calendar';
 import { isServer } from '../lib/isServer';
 
-function Test() {
-  return <div>Test component</div>;
-}
-
 /**
  * For Routing
  */
@@ -30,6 +26,10 @@ const Routes = () => {
 };
 
 export default Routes;
+
+function Test() {
+  return <div>Test component</div>;
+}
 
 function renderBasePath() {
   const key = '@d_path';
