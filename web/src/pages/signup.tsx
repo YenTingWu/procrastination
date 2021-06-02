@@ -7,7 +7,7 @@ export default function SignUp({}) {
   return (
     <>
       <HeaderController
-        title="Login"
+        title="Sign Up"
         description="This is a procrastination auth page"
       />
       <Flex

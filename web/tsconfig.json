@@ -17,6 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["src/components/*"],
+      "@screens/*": ["src/screens/*"],
       "@hooks/*": ["src/hooks/*"],
       "@globalStore/*": ["src/globalStore/*"]
     }

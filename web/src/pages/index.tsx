@@ -9,13 +9,14 @@ import { LoadingUI } from '@components/LoadingUI';
 
 export default function Home({}) {
   useSaveTokenFromQueryString();
-  const hasTokens = useTokenStore((s) => !!(s.accessToken && s.refreshToken));
+  // TODO: Check accessToken from cookie
+  const hasTokens = useTokenStore((s) => !!s.accessToken);
   const { push } = useRouter();
   const [isCheckedToken, setCheckedToken] = useState<boolean>(false);
 
   useEffect(() => {
     if (hasTokens) {
-      push('/calender');
+      push('/dashboard');
     } else {
       setCheckedToken(true);
     }

@@ -6,7 +6,7 @@ export default function SignIn({}) {
   return (
     <>
       <HeaderController
-        title="Login"
+        title="Sign In"
         description="This is a procrastination auth page"
       />
       <Flex

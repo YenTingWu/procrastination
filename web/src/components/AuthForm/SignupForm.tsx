@@ -8,6 +8,7 @@ import { useDebounceCallback } from '@hooks/useDebounceCallback';
 import { FormLabelInputUI } from './FormLabelInputUI';
 import { LogoButton } from './LogoButton';
 import { GoogleIcon } from '@components/Icon';
+import { API_BASE_URL } from '../../config';
 
 type SignUpFormInput = {
   email: string;
@@ -26,7 +27,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = () => {
   const handleSocialLoginLogin = useDebounceCallback(
     async (socialLoginType: SocialLoginType) => {
       const res = await axios({
-        baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseURL: API_BASE_URL,
         url: `/auth/${socialLoginType}/web`,
         method: 'POST',
       });

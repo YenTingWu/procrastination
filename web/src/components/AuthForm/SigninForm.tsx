@@ -9,6 +9,7 @@ import { Button, Flex, Box, Link } from '@chakra-ui/react';
 import { LogoButton } from './LogoButton';
 import { FormLabelInputUI } from './FormLabelInputUI';
 import { GoogleIcon } from '@components/Icon';
+import { API_BASE_URL } from '../../config';
 
 export const StyledForm = styled.form`
   max-width: 276px;
@@ -40,7 +41,7 @@ export const SignInForm: React.FC<SignInFormProps> = () => {
   const handleSocialLogin = useDebounceCallback(
     async (socialLoginType: SocialLoginType) => {
       const res = await axios({
-        baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseURL: API_BASE_URL,
         url: `/auth/${socialLoginType}/web`,
         method: 'POST',
       });
