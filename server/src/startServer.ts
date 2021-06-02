@@ -4,15 +4,18 @@ import session from 'express-session';
 import passport from 'passport';
 // import { createProxyMiddleware } from 'http-proxy-middleware';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { createConnection } from 'typeorm';
 import { morganMiddleware } from './middleware/morganMiddleware';
 import { CLIENT_BASE_URL, SESSION_SECRET } from './config';
 import authRouter from './routes/auth';
+import userRouter from './routes/user';
 import startTwitterPassport from './configStarter/startTwitterPassport';
 
 export default async () => {
   const PORT = process.env.PORT || 5000;
   const app = express();
+  app.use(cookieParser());
 
   app.use(
     cors({
@@ -56,6 +59,8 @@ export default async () => {
   });
 
   app.use('/auth', authRouter);
+
+  app.use('/user', userRouter);
 
   app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}`);

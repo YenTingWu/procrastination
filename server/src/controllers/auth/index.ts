@@ -5,6 +5,7 @@ import { createAccessToken, createRefreshToken } from '../../lib/createAuth';
 // import { getValidName } from '../../lib/getValidName';
 import { v4 as uuidv4 } from 'uuid';
 import { CLIENT_BASE_URL } from '../../config';
+import { sendRefreshToken } from '../../lib/sendRefreshToken';
 
 /**
  * ## postTraditionalLogin
@@ -29,18 +30,11 @@ export const postTraditionalLogin = async (req: Request, res: Response) => {
     throw new Error('Unable to confirm your email or password');
   }
 
-  // res.cookie('@procrastination/jid', createRefreshToken(user), {
-  //   httpOnly: true,
-  //   path: '/auth',
-  // });
+  sendRefreshToken(res, createRefreshToken(user));
 
   return res
     .status(302)
-    .redirect(
-      `${CLIENT_BASE_URL}?accessToken=${createAccessToken(
-        user
-      )}&refreshToken=${createRefreshToken(user)}`
-    );
+    .redirect(`${CLIENT_BASE_URL}?accessToken=${createAccessToken(user)}`);
 };
 
 /**
@@ -86,16 +80,9 @@ export const postTraditionalRegister = async (req: Request, res: Response) => {
     );
   }
 
-  // res.cookie('@procrastination/jid', createRefreshToken(user), {
-  //   httpOnly: true,
-  //   path: '/auth',
-  // });
+  sendRefreshToken(res, createRefreshToken(user));
 
   return res
     .status(302)
-    .redirect(
-      `${CLIENT_BASE_URL}?accessToken=${createAccessToken(
-        user
-      )}&refreshToken=${createRefreshToken(user)}`
-    );
+    .redirect(`${CLIENT_BASE_URL}?accessToken=${createAccessToken(user)}`);
 };

@@ -10,6 +10,7 @@ import {
 
 import { getValidName } from '../../lib/getValidName';
 import { createAccessToken, createRefreshToken } from '../../lib/createAuth';
+import { sendRefreshToken } from '../../lib/sendRefreshToken';
 
 let oauth2Client = new google.auth.OAuth2(
   GOOGLE_CLIENT_ID,
@@ -34,8 +35,6 @@ export const postGoogleAuthentication = (_req: Request, res: Response) => {
     access_type: 'offline',
     scope: scopes,
   });
-
-  res.header('Access-Control-Allow-Origin', '*');
 
   return res.json({ url });
 };
@@ -72,7 +71,6 @@ export const getGoogleAuthenticationCallback = async (
 
   const { email, id } = userInfo.data;
   let user = await User.findOne({ email });
-  console.log(user);
 
   if (!user) {
     const { picture, name, verified_email } = userInfo.data;
@@ -80,20 +78,20 @@ export const getGoogleAuthenticationCallback = async (
 
     user = await User.create({
       email,
-      avatar: picture,
+      avatar: picture as string,
       displayName: validName,
       insensitiveName: validName.toLocaleLowerCase(),
-      googleId: id,
-      isVerifiedEmail: verified_email,
+      googleId: id as string,
+      isVerifiedEmail: verified_email as boolean,
     }).save();
   } else if (!user.googleId) {
-    user.googleId = id;
+    user.googleId = id as string;
     await user.save();
   }
 
+  sendRefreshToken(res, createRefreshToken(user));
+
   return res.redirect(
-    `${CLIENT_BASE_URL}?accessToken=${createAccessToken(
-      user
-    )}&refreshToken=${createRefreshToken(user)}`
+    `${CLIENT_BASE_URL}?accessToken=${createAccessToken(user)}`
   );
 };

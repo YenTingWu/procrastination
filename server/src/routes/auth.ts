@@ -3,6 +3,7 @@ import {
   postTraditionalLogin,
   postTraditionalRegister,
 } from '../controllers/auth';
+import { getRefreshToken } from '../controllers/auth/refreshToken';
 import {
   postGoogleAuthentication,
   getGoogleAuthenticationCallback,
@@ -31,6 +32,7 @@ import {
 
 const router = Router();
 
+router.get('/refresh_token', getRefreshToken);
 router.post('/login', postTraditionalLogin);
 router.post('/register', postTraditionalRegister);
 router.post('/twitter/web', postTwitterOAuth);

@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
+  ManyToMany,
 } from 'typeorm';
 import { IsEmail } from 'class-validator';
+import { Calendar } from './Calendar';
 
 @Entity('users')
 @Unique(['displayName'])
@@ -46,4 +48,7 @@ export class User extends BaseEntity {
 
   @Column('int', { default: 0 })
   tokenVersion: number;
+
+  @ManyToMany(() => Calendar, (calendar) => calendar.user_id)
+  calendars: Calendar[];
 }
