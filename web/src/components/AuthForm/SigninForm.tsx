@@ -29,7 +29,7 @@ type SignInFormInput = {
   password: string;
 };
 
-interface SignInFormProps {}
+export interface SignInFormProps {}
 
 /**
  * ## SignInForm
@@ -58,7 +58,7 @@ export const SignInForm: React.FC<SignInFormProps> = () => {
     ) => {
       try {
         const res = await axios({
-          baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+          baseURL: API_BASE_URL,
           url: `/auth/login`,
           method: 'POST',
           params: {

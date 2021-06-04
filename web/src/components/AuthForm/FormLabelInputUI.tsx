@@ -1,17 +1,19 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Flex, FormLabel, Input } from '@chakra-ui/react';
 
-interface FormLabelInputUIProps
+export interface FormLabelInputUIProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   label: string;
-  htmlFor: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<any>) => void;
+  htmlFor?: string;
 }
 
 /**
  * ## FormLabelInputUI
  * An UI component for the combination of label and input
- * @param props name, label
+ * @param props name, label, value, onChange
  * @returns JSX.Element
  */
 
@@ -19,9 +21,11 @@ export const FormLabelInputUI: React.FC<FormLabelInputUIProps> = ({
   name,
   label,
   htmlFor,
+  value,
+  onChange,
   ...attr
 }) => {
-  const { value, onChange, type, autoComplete, id } = attr;
+  const { type, autoComplete, id } = attr;
   const [isFocus, setFocus] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,7 +44,7 @@ export const FormLabelInputUI: React.FC<FormLabelInputUIProps> = ({
       }}
     >
       <FormLabel
-        htmlFor={htmlFor}
+        htmlFor={htmlFor || ''}
         m={0}
         px="1"
         position="absolute"
@@ -61,10 +65,11 @@ export const FormLabelInputUI: React.FC<FormLabelInputUIProps> = ({
          * If the input is password type, use "aria-describedby" to outline password
          * rules by giving it the ID of the element that describes the constraints
          */
-        id={id}
-        aria-describedby={attr['aria-describedby']}
-        type={type}
-        autoComplete={autoComplete}
+
+        id={id || ''}
+        aria-describedby={attr['aria-describedby'] || ''}
+        type={type || ''}
+        autoComplete={autoComplete || ''}
         /**
          *
          */

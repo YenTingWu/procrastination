@@ -15,7 +15,8 @@ export const revokeRefreshToken = async (): Promise<string> => {
   });
 
   if (data?.accessToken) {
-    return data.accessToken as string;
+    return data.accessToken;
   }
+
   return '';
 };
