@@ -19,7 +19,8 @@
       "@components/*": ["src/components/*"],
       "@screens/*": ["src/screens/*"],
       "@hooks/*": ["src/hooks/*"],
-      "@globalStore/*": ["src/globalStore/*"]
+      "@globalStore/*": ["src/globalStore/*"],
+      "@types": ["src/types"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

@@ -9,11 +9,13 @@
     "storybook": "start-storybook -p 6006"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.13",
     "@chakra-ui/react": "^1.6.2",
     "@emotion/react": "^11.4.0",
     "@emotion/styled": "^11.3.0",
     "@next/react-dev-overlay": "^10.2.3",
     "axios": "^0.21.1",
+    "date-fns": "^2.22.1",
     "formik": "^2.2.8",
     "framer-motion": "^4.1.17",
     "jwt-decode": "^3.1.2",

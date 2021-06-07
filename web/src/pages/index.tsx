@@ -6,6 +6,9 @@ import { useTokenStore } from '@globalStore/useTokenStore';
 import { Flex, Link } from '@chakra-ui/react';
 import { HeaderController } from '@components/HeadController';
 import { LoadingUI } from '@components/LoadingUI';
+import { ControlledMonthlyDatePicker } from '@components/DatePicker/ControlledMonthlyDatePicker';
+import { UncontrolledMonthlyDatePicker } from '@components/DatePicker/UncontrolledMonthlyDatePicker';
+import { YearlyDatePicker } from '@components/DatePicker/YearlyDatePicker';
 
 export default function Home({}) {
   useSaveTokenFromQueryString();
@@ -38,6 +41,7 @@ export default function Home({}) {
         <NextLink href="/signin">
           <Link>sign in </Link>
         </NextLink>
+        <YearlyDatePicker />
         <NextLink href="/signup">
           <Link>sign up </Link>
         </NextLink>
