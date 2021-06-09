@@ -3,11 +3,12 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect,
 } from 'react-router-dom';
 import { Calendar } from './Calendar';
 import { isServer } from '../lib/isServer';
+import { AppDefaultLayoutDesktop } from '@components/Layout/AppDefaultLayoutDesktop';
+import { NavigationSideBar } from '@components/NavigationSideBar';
 
 /**
  * For Routing
@@ -15,8 +16,6 @@ import { isServer } from '../lib/isServer';
 const Routes = () => {
   return isServer ? null : (
     <Router basename="/dashboard">
-      <Link to="/">Calendar</Link>
-      <Link to="/test">test</Link>
       <Switch>
         <Route path="/" exact render={renderBasePath} />
         <Route path="/test" exact component={Test} />
@@ -28,7 +27,12 @@ const Routes = () => {
 export default Routes;
 
 function Test() {
-  return <div>Test component</div>;
+  return (
+    <AppDefaultLayoutDesktop>
+      <NavigationSideBar />
+      Test Page
+    </AppDefaultLayoutDesktop>
+  );
 }
 
 function renderBasePath() {

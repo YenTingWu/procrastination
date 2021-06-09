@@ -1,3 +1,5 @@
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+
 module.exports = {
   stories: [
     '../src/stories/**/*.stories.mdx',
@@ -9,6 +11,7 @@ module.exports = {
       ...config,
       resolve: {
         ...config.resolve,
+        plugins: [new TsconfigPathsPlugin()],
         alias: {
           ...config.resolve.alias,
           '@emotion/core': '@emotion/react',

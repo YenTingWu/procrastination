@@ -1,9 +1,9 @@
-import React, { useMemo, useReducer, Reducer } from 'react';
+import React, { useMemo, useReducer, Reducer, useCallback } from 'react';
 import { Flex, SimpleGrid, Text } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { WEEKDAYS, MONTHS, DateInfoType } from '@types';
 import { useCurrentDate } from '@globalStore/useCurrentDate';
-import { getThisMonthDateInfo } from '../../lib/getThisMonthDateInfo';
+import { getThisMonthDateInfo } from '@lib/getThisMonthDateInfo';
 import { DateContainer } from './DateContainer';
 
 type State = {
@@ -14,10 +14,9 @@ type State = {
 type Action =
   | { type: 'monthIncrement' }
   | { type: 'monthDecrement' }
-  | { type: 'yearIncrement' }
-  | { type: 'yearDecrement' };
+  | { type: 'setMonth'; payload: number };
 
-function reducer(state: State, action: Action): State {
+const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case 'monthIncrement':
       if (state.month === 11) {
@@ -41,16 +40,18 @@ function reducer(state: State, action: Action): State {
         ...state,
         month: state.month - 1,
       };
-    case 'yearIncrement':
-      return { ...state, year: state.year + 1 };
-    case 'yearDecrement':
-      return { ...state, year: state.year - 1 };
+    case 'setMonth':
+      return {
+        ...state,
+        month: action.payload,
+      };
+
     default:
       throw new Error();
   }
-}
+};
 
-interface ControlledMonthlyDatePickerProps {}
+export interface ControlledMonthlyDatePickerProps {}
 
 /**
  * ## ControlledMonthlyDatePicker
@@ -80,7 +81,13 @@ export const ControlledMonthlyDatePicker: React.FC<ControlledMonthlyDatePickerPr
   const weekdays = useMemo(
     () =>
       Object.values(WEEKDAYS).map((d) => (
-        <Flex key={d} justifyContent="center" as="span" fontSize="12px">
+        <Flex
+          key={d}
+          justifyContent="center"
+          color="gray.500"
+          as="span"
+          fontSize="12px"
+        >
           {d}
         </Flex>
       )),
@@ -92,7 +99,20 @@ export const ControlledMonthlyDatePicker: React.FC<ControlledMonthlyDatePickerPr
     [state.year, state.month]
   );
 
-  const handleDateContainerClick = (d: DateInfoType) => setDate(d);
+  const handleAddMonth = useCallback(
+    () => dispatch({ type: 'monthIncrement' }),
+    []
+  );
+  const handleMinusMonth = useCallback(
+    () => dispatch({ type: 'monthDecrement' }),
+    []
+  );
+  const handleDateContainerClick = (d: DateInfoType) => {
+    if (d.month !== state.month) {
+      dispatch({ type: 'setMonth', payload: d.month });
+    }
+    setDate(d);
+  };
 
   return (
     <Flex
@@ -100,7 +120,6 @@ export const ControlledMonthlyDatePicker: React.FC<ControlledMonthlyDatePickerPr
       w="100%"
       direction="column"
       alignItems="center"
-      boxShadow="1px 3px 8px 3px rgba(0, 0, 0, 0.25)"
       borderRadius="10px"
     >
       <Flex
@@ -115,7 +134,7 @@ export const ControlledMonthlyDatePicker: React.FC<ControlledMonthlyDatePickerPr
           _hover={{
             cursor: 'pointer',
           }}
-          onClick={() => dispatch({ type: 'monthDecrement' })}
+          onClick={handleMinusMonth}
         />
         <Text ml="2" mr="2" fontSize="16px" fontWeight="extrabold">
           {MONTHS[state.month]}, {state.year}
@@ -126,7 +145,7 @@ export const ControlledMonthlyDatePicker: React.FC<ControlledMonthlyDatePickerPr
           _hover={{
             cursor: 'pointer',
           }}
-          onClick={() => dispatch({ type: 'monthIncrement' })}
+          onClick={handleAddMonth}
         />
       </Flex>
       <SimpleGrid

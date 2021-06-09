@@ -6,6 +6,7 @@ interface DateContainerProps {
   containerDateInfo: MonthlyCalendarDateInfoType;
   currentDate: DateInfoType;
   onClick: (d: DateInfoType) => void;
+  sm?: boolean;
 }
 
 /**
@@ -18,6 +19,7 @@ export const DateContainer: React.FC<DateContainerProps> = ({
   containerDateInfo,
   currentDate,
   onClick,
+  sm,
 }) => {
   const { year, month, date, isCurrentMonth } = containerDateInfo;
 
@@ -33,7 +35,7 @@ export const DateContainer: React.FC<DateContainerProps> = ({
       as="span"
       justifyContent="center"
       alignItems="center"
-      fontSize="12"
+      borderRadius="2"
       color={isCurrentMonth ? (selected ? 'white' : '#333333') : '#bbbbbb'}
       bg={isCurrentMonth && selected ? 'red.400' : 'white'}
       _hover={{
@@ -45,7 +47,18 @@ export const DateContainer: React.FC<DateContainerProps> = ({
       }}
       onClick={handleClick}
     >
-      {containerDateInfo.date}
+      <Flex
+        fontSize="12px"
+        h={sm ? '10px' : 'auto'}
+        w={sm ? '10px' : 'auto'}
+        mt={sm ? '1' : 'auto'}
+        mb={sm ? '1' : 'auto'}
+        fontWeight="light"
+        justifyContent="center"
+        alignItems="center"
+      >
+        {containerDateInfo.date}
+      </Flex>
     </Flex>
   );
 };

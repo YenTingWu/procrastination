@@ -3,7 +3,7 @@ import { Meta, Story } from '@storybook/react/types-6-0';
 import {
   FormLabelInputUIProps,
   FormLabelInputUI,
-} from '../../components/AuthForm/FormLabelInputUI';
+} from '@components/AuthForm/FormLabelInputUI';
 
 export default {
   title: 'Auth/FormLabelInputUI',

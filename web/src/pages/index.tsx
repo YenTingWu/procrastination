@@ -6,9 +6,7 @@ import { useTokenStore } from '@globalStore/useTokenStore';
 import { Flex, Link } from '@chakra-ui/react';
 import { HeaderController } from '@components/HeadController';
 import { LoadingUI } from '@components/LoadingUI';
-import { ControlledMonthlyDatePicker } from '@components/DatePicker/ControlledMonthlyDatePicker';
-import { UncontrolledMonthlyDatePicker } from '@components/DatePicker/UncontrolledMonthlyDatePicker';
-import { YearlyDatePicker } from '@components/DatePicker/YearlyDatePicker';
+import { NavigationSideBar } from '@components/NavigationSideBar';
 
 export default function Home({}) {
   useSaveTokenFromQueryString();
@@ -32,6 +30,7 @@ export default function Home({}) {
   return (
     <>
       <HeaderController description="This is a procrastination landing page" />
+
       <Flex
         minH="100vh"
         minW="100%"
@@ -41,7 +40,7 @@ export default function Home({}) {
         <NextLink href="/signin">
           <Link>sign in </Link>
         </NextLink>
-        <YearlyDatePicker />
+        <NavigationSideBar />
         <NextLink href="/signup">
           <Link>sign up </Link>
         </NextLink>

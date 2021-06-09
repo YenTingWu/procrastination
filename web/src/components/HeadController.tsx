@@ -27,7 +27,13 @@ export const HeaderController: NextPage<HeaderControllerProps> = ({
         content="width=device-width, initial-scale=1, user-scalable=no, user-scalable=0"
       />
       <title>{title ? `${title} | ${appName}` : appName}</title>
-      <meta name="description" content={description} />
+      <meta
+        name="description"
+        content={
+          description ||
+          'Procrastination is a productive app for procrastinators'
+        }
+      />
       <meta name="application-name" content={appName} />
       <meta
         property="og:title"

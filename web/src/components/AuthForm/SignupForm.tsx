@@ -45,7 +45,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = () => {
     ) => {
       try {
         const res = await axios({
-          baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+          baseURL: API_BASE_URL,
           url: `/auth/register`,
           method: 'POST',
           params: {

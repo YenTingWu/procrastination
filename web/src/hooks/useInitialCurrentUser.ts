@@ -17,8 +17,7 @@ async function fetchData(token: string) {
 }
 
 /**
- * This Page has to get data with auth
- * ex. Authentication: Bearer ${token}
+ * ----------------------->  Authentication: Bearer ${token}  <-----------------------
  * 1. If no accessToken exists or is unable to verify, request a new accessToken via refreshToken from server
  * 2. If both tokens do not exist and are unable to verify, redirect back to the landing page
  */

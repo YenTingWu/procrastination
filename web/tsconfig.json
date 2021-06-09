@@ -20,6 +20,7 @@
       "@screens/*": ["src/screens/*"],
       "@hooks/*": ["src/hooks/*"],
       "@globalStore/*": ["src/globalStore/*"],
+      "@lib/*": ["src/lib/*"],
       "@types": ["src/types"]
     }
   },
