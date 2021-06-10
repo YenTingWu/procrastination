@@ -2,6 +2,7 @@ import {
   Entity,
   Unique,
   PrimaryGeneratedColumn,
+  Generated,
   Column,
   BaseEntity,
   ManyToMany,
@@ -16,6 +17,10 @@ import { Calendar } from './Calendar';
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Generated('uuid')
+  @Column()
+  uuid: string;
 
   @Column({ type: 'varchar', length: 64 })
   displayName: string;
@@ -36,10 +41,6 @@ export class User extends BaseEntity {
   @Column('text', { default: null })
   googleId: string;
 
-  /**
-   * If the user is created by social login, do not access the user login by manual
-   */
-
   @Column('text', { default: null })
   password: string;
 
@@ -49,6 +50,6 @@ export class User extends BaseEntity {
   @Column('int', { default: 0 })
   tokenVersion: number;
 
-  @ManyToMany(() => Calendar, (calendar) => calendar.user_id)
+  @ManyToMany(() => Calendar, (calendar) => calendar.users)
   calendars: Calendar[];
 }

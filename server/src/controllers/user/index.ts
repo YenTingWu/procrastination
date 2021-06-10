@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
-// import { User } from '../../entity/User';
-// import { getConnection } from 'typeorm';
+import setHours from 'date-fns/fp/setHours';
+import { getRepository } from 'typeorm';
 
-export const getUserData = async (req: Request, res: Response) => {
+import { User } from '../../entity/User';
+import { Calendar } from '../../entity/Calendar';
+import { Event } from '../../entity/Event';
+
+export const getUserData = async (_: Request, res: Response) => {
   const { payload } = res.locals;
 
   if (!payload || !payload.userId) {
@@ -10,9 +14,58 @@ export const getUserData = async (req: Request, res: Response) => {
     throw Error('not authenticated');
   }
 
-  // await getConnection().createQueryBuilder().relation(User, 'calendars')
+  let user: User;
+
+  try {
+    user = await getRepository(User)
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.calendars', 'calendars')
+      .leftJoinAndSelect('calendars.events', 'events')
+      .where('user.id = :id', { id: payload.userId })
+      .getOne();
+
+    if (user == null) {
+      res.status(401).send('not authenticated');
+      throw Error('not authenticated');
+    }
+
+    if (user.calendars.length === 0) {
+      const now = new Date();
+      let newEvent = await Event.create({
+        name: 'New event',
+        description: 'This is an event example',
+        expectedDuration: 3 * 60 * 60 * 1000,
+        duration: 0,
+        createdAt: now,
+        startTime: setHours(8, now),
+        endTime: setHours(16, now),
+        isProcrastinationTime: false,
+      });
+
+      let newCalendar = await Calendar.create({
+        name: 'The new calendar',
+        createdAt: now,
+        modifiedAt: now,
+      });
+
+      newCalendar.events = [newEvent];
+      user.calendars.push(newCalendar);
+
+      await Event.save(newEvent);
+      await Calendar.save(newCalendar);
+      user = await User.save(user);
+    }
+  } catch (err) {
+    console.log(err);
+  }
 
   res.setHeader('content-type', 'json/application');
 
-  res.send(JSON.stringify('This is user data'));
+  delete user.insensitiveName;
+  delete user.tokenVersion;
+  delete user.password;
+  delete user.googleId;
+  delete user.twitterId;
+
+  res.json(user);
 };

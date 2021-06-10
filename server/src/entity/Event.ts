@@ -8,16 +8,16 @@ import { EventType } from './EventType';
 export class Event extends BaseEventEntity {
   // TODO: location (GEO point)
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamp with time zone' })
   createdAt: Date;
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamp with time zone' })
   startTime: Date;
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamp with time zone' })
   endTime: Date;
 
-  @ManyToOne(() => Calendar, (calendar) => calendar.events)
+  @ManyToOne(() => Calendar, (calendar) => calendar.events, { cascade: true })
   calendar: Calendar;
 
   @OneToMany(() => SubEvent, (s) => s.event)

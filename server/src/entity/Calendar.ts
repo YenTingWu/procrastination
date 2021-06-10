@@ -27,7 +27,7 @@ export class Calendar extends BaseEntity {
   @OneToMany(() => Event, (event) => event.calendar)
   events: Event[];
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, (user) => user.calendars)
   @JoinTable()
-  user_id: User[];
+  users: User[];
 }
