@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Flex, Text, Divider, Avatar, Button } from '@chakra-ui/react';
+import { Flex, Divider, Avatar, Button } from '@chakra-ui/react';
 import { LogoIcon } from '@components/Icon';
 import { useHistory } from 'react-router-dom';
 
@@ -21,7 +21,20 @@ const SideBarItemContainer: React.FC = ({ children }) => {
   );
 };
 
-export const NavigationSideBar = () => {
+interface NavigationSideBarProps {
+  avatar: string;
+  placeholder: string;
+}
+
+/**
+ *
+ * @returns
+ */
+
+export const NavigationSideBar: React.FC<NavigationSideBarProps> = ({
+  avatar,
+  placeholder,
+}) => {
   let history = useHistory();
 
   const handleLogoIconClick = useCallback(() => history.push('/'), []);
@@ -47,7 +60,7 @@ export const NavigationSideBar = () => {
       <Divider w="80%" />
 
       <Flex flexDirection="column" alignItems="center" pt="3">
-        <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
+        <Avatar name={placeholder} src={avatar} />
       </Flex>
     </Flex>
   );

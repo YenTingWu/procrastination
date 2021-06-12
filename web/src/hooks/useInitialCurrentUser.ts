@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useTokenStore } from '@globalStore/useTokenStore';
 import { API_BASE_URL } from '../config';
 import { revokeRefreshToken } from '../lib/revokeRefreshToken';
+import { User } from '@types';
 
 async function fetchData(token: string) {
   return axios({
@@ -29,33 +30,39 @@ export const useInitialCurrentUser = () => {
     setTokens: s.setTokens,
   }));
 
-  return useQuery(['currentUser'], async () => {
-    try {
-      const { data } = await fetchData(accessToken);
-      return data;
-    } catch (err) {
-      /**
-       * If the error is Unauthenticated,
-       * try to re-grant accessToken by revoking refreshToken
-       *
-       * If refreshToken is also invalid,
-       * remove accessToken and push back to home page
-       */
+  return useQuery<User, Error>(
+    ['currentUser'],
+    async () => {
+      try {
+        const { data } = await fetchData(accessToken);
+        return data;
+      } catch (err) {
+        /**
+         * If the error is Unauthenticated,
+         * try to re-grant accessToken by revoking refreshToken
+         *
+         * If refreshToken is also invalid,
+         * remove accessToken and push back to home page
+         */
 
-      if (err.response.status === 401) {
-        const token = await revokeRefreshToken();
+        if (err.response.status === 401) {
+          const token = await revokeRefreshToken();
 
-        if (token) {
-          setTokens({ accessToken: token });
-          const { data } = await fetchData(token);
-          return data;
+          if (token) {
+            setTokens({ accessToken: token });
+            const { data } = await fetchData(token);
+            return data;
+          }
+
+          setTokens({ accessToken: '' });
+          push('/');
+        } else {
+          throw new Error('unable to fetch data');
         }
-
-        setTokens({ accessToken: '' });
-        push('/');
-      } else {
-        throw new Error('unable to fetch data');
       }
+    },
+    {
+      staleTime: 3 * 60 * 1000,
     }
-  });
+  );
 };

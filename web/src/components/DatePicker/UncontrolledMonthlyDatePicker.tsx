@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
-import { Flex, SimpleGrid, Text, Box } from '@chakra-ui/react';
-
+import React, { useMemo, useCallback } from 'react';
+import { Flex, SimpleGrid, Text, Box, FlexProps } from '@chakra-ui/react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { WEEKDAYS, MONTHS, DateInfoType } from '@types';
 import { getThisMonthDateInfo } from '../../lib/getThisMonthDateInfo';
 import { DateContainer } from './DateContainer';
@@ -10,22 +10,27 @@ type MonthInfo = {
   year: number;
 };
 
-interface UncontrolledMonthlyDatePickerProps {
+interface UncontrolledMonthlyDatePickerProps extends FlexProps {
   monthInfo: MonthInfo;
-  currentDate: DateInfoType;
+  selectedDate: DateInfoType;
   onSelectDate: (d: DateInfoType) => void;
+  onAddMonth?: () => void;
+  onMinusMonth?: () => void;
 }
 
 /**
  * ## UncontrolledMonthlyDatePicker
- * @params props - {{ monthInfo, currentDate, onSelectDate }}
+ * @param {{{ monthInfo, currentDate, onSelectDate, onAddMonth?, onMinusMonth?}
  * @returns React.FC
  */
 
 export const UncontrolledMonthlyDatePicker: React.FC<UncontrolledMonthlyDatePickerProps> = ({
   monthInfo,
-  currentDate,
+  selectedDate,
   onSelectDate,
+  onAddMonth,
+  onMinusMonth,
+  flex,
 }) => {
   const { year, month } = monthInfo;
 
@@ -50,7 +55,46 @@ export const UncontrolledMonthlyDatePicker: React.FC<UncontrolledMonthlyDatePick
     [year, month]
   );
 
-  const handleDateContainerClick = (d: DateInfoType) => onSelectDate(d);
+  const monthSection =
+    onAddMonth && onMinusMonth ? (
+      <Flex
+        alignSelf="stretch"
+        mt="2"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <ChevronLeftIcon
+          w="20px"
+          h="20px"
+          _hover={{
+            cursor: 'pointer',
+          }}
+          onClick={onMinusMonth}
+        />
+        <Text ml="2" mr="2" fontSize="16px" fontWeight="extrabold">
+          {MONTHS[month]}, {year}
+        </Text>
+        <ChevronRightIcon
+          w="20px"
+          h="20px"
+          _hover={{
+            cursor: 'pointer',
+          }}
+          onClick={onAddMonth}
+        />
+      </Flex>
+    ) : (
+      <Text mt="2" fontSize="16px">
+        {MONTHS[month]}
+      </Text>
+    );
+
+  const handleDateContainerClick = useCallback(
+    (d: DateInfoType) => {
+      onSelectDate(d);
+    },
+    [onSelectDate]
+  );
   return (
     <Flex
       ml="auto"
@@ -59,17 +103,16 @@ export const UncontrolledMonthlyDatePicker: React.FC<UncontrolledMonthlyDatePick
       w="100%"
       direction="column"
       alignItems="center"
+      flex={flex || 'auto'}
     >
-      <Text mt="2" fontSize="16px">
-        {MONTHS[month]}
-      </Text>
+      {monthSection}
       <SimpleGrid pb="2" pt="2" w="100%" columns={7} rowGap="1.5">
         {weekdays}
         {datesForThisMonthCalendar.map((d) => (
           <DateContainer
             key={`${d.year}_${d.month}_${d.date}`}
             containerDateInfo={d}
-            currentDate={currentDate}
+            currentDate={selectedDate}
             sm={true}
             onClick={handleDateContainerClick}
           />

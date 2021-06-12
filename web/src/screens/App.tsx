@@ -8,20 +8,13 @@ import { LoadingUI } from '@components/LoadingUI';
  */
 
 const App = () => {
-  const { isLoading, data } = useInitialCurrentUser();
+  const { isLoading } = useInitialCurrentUser();
 
   if (isLoading) {
     return <LoadingUI />;
   }
 
-  console.log(data);
-
-  return (
-    <>
-      <Routes />
-      <div>{data ? 'Gotcha' : 'Nothing'}</div>
-    </>
-  );
+  return <Routes />;
 };
 
 export default App;

@@ -39,7 +39,7 @@ export const YearlyDatePicker: React.FC<YearlyDatePickerProps> = () => {
       <UncontrolledMonthlyDatePicker
         key={`${year}_${i}`}
         monthInfo={{ year, month: i }}
-        currentDate={currentDate}
+        selectedDate={currentDate}
         onSelectDate={handleSelectedDate}
       />
     );

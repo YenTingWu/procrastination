@@ -32,3 +32,47 @@ export type DateInfoType = {
 export interface MonthlyCalendarDateInfoType extends DateInfoType {
   isCurrentMonth?: boolean;
 }
+
+export type Event = {
+  id: number;
+  uuid: string;
+  name: string;
+  startTime: Date | string;
+  endTime: Date | string;
+  duration: number;
+  expectedDuration: number;
+  description: string;
+  isProcrastination: boolean;
+};
+
+export type Schedule = {
+  startTime: Date;
+  endTime: Date;
+  isFree: boolean;
+  expectedDuration: number;
+  id?: number;
+  uuid?: string;
+  duration?: number;
+  name?: string;
+  description?: string;
+  isProcrastination?: boolean;
+};
+
+export type Calendar = {
+  id: number;
+  name: string;
+  createdAt: Date | string;
+  modifiedAt: Date | string;
+  events: Event[];
+};
+export interface User {
+  id: number;
+  uuid: string;
+  displayName: string;
+  email: string;
+  isVerifiedEmail: boolean;
+  twitterId?: string;
+  googleId?: string;
+  avatar?: string;
+  calendars: Calendar[];
+}

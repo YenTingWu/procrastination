@@ -44,7 +44,7 @@ export const getThisMonthDateInfo = ({
       date: dateInLastMonth,
     };
 
-    datesForCalendar.push(dateInfo);
+    datesForCalendar.unshift(dateInfo);
     dateInLastMonth -= 1;
     restOfLastMonthDaysHasToPushIntoCalendar--;
   }

@@ -14,7 +14,7 @@ type State = {
 type Action =
   | { type: 'monthIncrement' }
   | { type: 'monthDecrement' }
-  | { type: 'setMonth'; payload: number };
+  | { type: 'setMonth'; payload: { month: number; year: number } };
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -42,8 +42,8 @@ const reducer: Reducer<State, Action> = (state, action) => {
       };
     case 'setMonth':
       return {
-        ...state,
-        month: action.payload,
+        year: action.payload.year,
+        month: action.payload.month,
       };
 
     default:
@@ -109,7 +109,7 @@ export const ControlledMonthlyDatePicker: React.FC<ControlledMonthlyDatePickerPr
   );
   const handleDateContainerClick = (d: DateInfoType) => {
     if (d.month !== state.month) {
-      dispatch({ type: 'setMonth', payload: d.month });
+      dispatch({ type: 'setMonth', payload: { month: d.month, year: d.year } });
     }
     setDate(d);
   };
