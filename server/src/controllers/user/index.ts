@@ -31,10 +31,11 @@ export const getUserData = async (_: Request, res: Response) => {
 
     if (user.calendars.length === 0) {
       const now = new Date();
+
       let newEvent = await Event.create({
         name: 'New event',
         description: 'This is an event example',
-        expectedDuration: 3 * 60 * 60 * 1000,
+        expectedDuration: 8 * 60 * 60,
         duration: 0,
         createdAt: now,
         startTime: setHours(8, now),

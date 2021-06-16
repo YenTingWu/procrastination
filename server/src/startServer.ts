@@ -10,6 +10,7 @@ import { morganMiddleware } from './middleware/morganMiddleware';
 import { CLIENT_BASE_URL, SESSION_SECRET } from './config';
 import authRouter from './routes/auth';
 import userRouter from './routes/user';
+import eventRouter from './routes/event';
 import startTwitterPassport from './configStarter/startTwitterPassport';
 
 export default async () => {
@@ -39,6 +40,8 @@ export default async () => {
       saveUninitialized: true,
     })
   );
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
 
   const connection = await createConnection();
 
@@ -46,8 +49,12 @@ export default async () => {
 
   app.use(passport.initialize());
 
-  app.get('/', (_req, res) => {
+  app.get('/', (_, res) => {
     res.send('Hello this is an app');
+  });
+
+  app.post('/', (req, res) => {
+    console.log(req.body);
   });
 
   app.get('/login', (_, res) => {
@@ -59,8 +66,8 @@ export default async () => {
   });
 
   app.use('/auth', authRouter);
-
   app.use('/user', userRouter);
+  app.use('/event', eventRouter);
 
   app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}`);

@@ -6,6 +6,7 @@ import {
   JoinTable,
   BaseEntity,
   OneToMany,
+  Generated,
 } from 'typeorm';
 import { Event } from './Event';
 import { User } from './User';
@@ -15,13 +16,37 @@ export class Calendar extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Generated('uuid')
+  @Column()
+  uuid: string;
+
   @Column()
   name: string;
 
-  @Column('timestamptz')
+  @Column({
+    type: 'timestamptz',
+    transformer: {
+      from: (dbType) => {
+        if (typeof dbType === 'string') {
+          return new Date(dbType);
+        }
+      },
+      to: (type) => type,
+    },
+  })
   createdAt: Date;
 
-  @Column('timestamptz')
+  @Column({
+    type: 'timestamptz',
+    transformer: {
+      from: (dbType) => {
+        if (typeof dbType === 'string') {
+          return new Date(dbType);
+        }
+      },
+      to: (type) => type,
+    },
+  })
   modifiedAt: Date;
 
   @OneToMany(() => Event, (event) => event.calendar)
