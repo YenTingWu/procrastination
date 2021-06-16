@@ -60,6 +60,7 @@ export type Schedule = {
 
 export type Calendar = {
   id: number;
+  uuid: string;
   name: string;
   createdAt: Date | string;
   modifiedAt: Date | string;

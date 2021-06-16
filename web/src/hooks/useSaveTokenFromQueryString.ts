@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useTokenStore } from '@globalStore/useTokenStore';
+import { useTokenStore } from '@globalStore/client/useTokenStore';
 
 export const useSaveTokenFromQueryString = () => {
   const { query: params, push } = useRouter();

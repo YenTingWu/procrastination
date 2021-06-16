@@ -2,18 +2,18 @@ import React, { useState, useCallback } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { Flex, Text, SimpleGrid, useBreakpointValue } from '@chakra-ui/react';
 import { UncontrolledMonthlyDatePicker } from './UncontrolledMonthlyDatePicker';
-import { useCurrentDate } from '@globalStore/useCurrentDate';
+import { useCurrentSelectedDate } from '@globalStore/client/useCurrentSelectedDate';
 import { DateInfoType } from '@types';
 
 export interface YearlyDatePickerProps {}
 
 export const YearlyDatePicker: React.FC<YearlyDatePickerProps> = () => {
-  const { currentDate, setDate } = useCurrentDate((s) => ({
-    currentDate: s.currentDate,
+  const { currentSelectedDate, setDate } = useCurrentSelectedDate((s) => ({
+    currentSelectedDate: s.currentSelectedDate,
     setDate: s.setDate,
   }));
 
-  const [year, setYear] = useState<number>(currentDate.year);
+  const [year, setYear] = useState<number>(currentSelectedDate.year);
 
   const containerWidthVariant = useBreakpointValue({
     xl: '980px',
@@ -39,7 +39,7 @@ export const YearlyDatePicker: React.FC<YearlyDatePickerProps> = () => {
       <UncontrolledMonthlyDatePicker
         key={`${year}_${i}`}
         monthInfo={{ year, month: i }}
-        selectedDate={currentDate}
+        selectedDate={currentSelectedDate}
         onSelectDate={handleSelectedDate}
       />
     );

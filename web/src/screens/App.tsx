@@ -1,5 +1,5 @@
 import React from 'react';
-import { useInitialCurrentUser } from '@hooks/useInitialCurrentUser';
+import { useInitialCurrentUser } from '@globalStore/server/useInitialCurrentUser';
 import Routes from './Routes';
 import { LoadingUI } from '@components/LoadingUI';
 

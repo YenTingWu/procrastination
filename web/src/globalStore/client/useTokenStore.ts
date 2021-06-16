@@ -1,6 +1,6 @@
 import create from 'zustand';
 import { combine } from 'zustand/middleware';
-import { isServer } from '../lib/isServer';
+import { isServer } from '@lib/isServer';
 
 const accessToken = '@procrastination/token';
 

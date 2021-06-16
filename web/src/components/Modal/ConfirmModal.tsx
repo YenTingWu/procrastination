@@ -4,40 +4,41 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
-  ModalBody,
   ModalFooter,
   Button,
 } from '@chakra-ui/react';
 
 interface ConfirmModalProps {
   isOpen: boolean;
-  onClose: () => void;
   content: string;
+  onClose: () => void;
+  onConfirm: () => void;
+  isLoading?: boolean;
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isOpen,
   onClose,
   content,
+  onConfirm,
+  isLoading,
 }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isCentered isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Modal Title</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <div>
-            1231231312kjhafklhaskdfhalksdfhaklsjdfhlkasdjhflakshjdflasdf
-          </div>
-        </ModalBody>
-
+        <ModalHeader>{content}</ModalHeader>
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
+          <Button variant="outline" colorScheme="blue" mr={3} onClick={onClose}>
             Close
           </Button>
-          <Button variant="ghost">Secondary Action</Button>
+          <Button
+            isLoading={typeof isLoading === 'boolean' ? isLoading : false}
+            onClick={onConfirm}
+            colorScheme="red"
+          >
+            Confirm
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

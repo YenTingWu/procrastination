@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import format from 'date-fns/fp/format';
 import {
   Box,
@@ -6,15 +6,19 @@ import {
   Heading,
   VStack,
   Text,
+  IconButton,
+  Fade,
   BackgroundProps,
 } from '@chakra-ui/react';
+import { DeleteIcon } from '@chakra-ui/icons';
 import { Schedule } from '@types';
-
 interface StackItemProps {
   title: string;
   percentage: number;
-  onClick: () => void;
   startTime: Date;
+  isDeleteMode: boolean;
+  onClick: () => void;
+  onDeleteButtonClick: () => void;
   bg?: BackgroundProps['bg'];
 }
 
@@ -23,7 +27,9 @@ const StackItem: React.FC<StackItemProps> = ({
   onClick,
   startTime,
   title,
+  isDeleteMode,
   bg,
+  onDeleteButtonClick,
 }) => {
   return (
     <Flex
@@ -34,9 +40,9 @@ const StackItem: React.FC<StackItemProps> = ({
       position="relative"
       justifyContent="center"
       alignItems="center"
-      onClick={onClick}
+      onClick={isDeleteMode ? () => {} : onClick}
       _hover={{
-        cursor: 'pointer',
+        cursor: isDeleteMode ? 'default' : 'pointer',
       }}
     >
       <Box position="absolute" left={'-3.5rem'} top={-3}>
@@ -47,13 +53,26 @@ const StackItem: React.FC<StackItemProps> = ({
       <Text fontSize="md" fontWeight="extrabold">
         {title}
       </Text>
+      {isDeleteMode && title !== 'free' && (
+        <Flex
+          position="absolute"
+          right="2"
+          _hover={{ cursor: 'pointer' }}
+          onClick={onDeleteButtonClick}
+        >
+          <Fade in={isDeleteMode}>
+            <DeleteIcon color="gray.500" />
+          </Fade>
+        </Flex>
+      )}
     </Flex>
   );
 };
 
 interface DailyScheduleShowcaseProps {
   schedules: Schedule[];
-  onSelectEvent: (id: string) => void;
+  onSelectEvent: (value: string | null) => void;
+  onDeleteButtonClick: (uuid?: string) => void;
 }
 
 /**
@@ -65,7 +84,21 @@ interface DailyScheduleShowcaseProps {
 export const DailyScheduleShowcase: React.FC<DailyScheduleShowcaseProps> = ({
   schedules,
   onSelectEvent,
+  onDeleteButtonClick,
 }) => {
+  const [isDeleteMode, setDeleteMode] = useState<boolean>(false);
+
+  const handleToggleDeleteMode = useCallback(
+    () => setDeleteMode((s) => !s),
+    []
+  );
+
+  useEffect(() => {
+    if (schedules.length) {
+      setDeleteMode(false);
+    }
+  }, [schedules.length]);
+
   return (
     <Flex flex="1 1 0" justifyContent="center" alignItems="center">
       <Flex
@@ -75,29 +108,56 @@ export const DailyScheduleShowcase: React.FC<DailyScheduleShowcaseProps> = ({
         p="1.5rem 2rem"
         flexDir="column"
         alignItems="center"
+        position="relative"
         boxShadow="1px 1px 5px 3px rgba(100, 100, 100, .25)"
       >
-        <Heading fontSize="5xl" letterSpacing=".25rem">
-          Today Schedule
-        </Heading>
-        <VStack mt="8" position="relative" w="80%" minH="60vh" spacing="0">
+        <Flex>
+          <Heading fontSize="5xl" letterSpacing=".25rem">
+            Today Schedule
+          </Heading>
+          <IconButton
+            aria-label="delete-button"
+            position="absolute"
+            right="10"
+            size="sm"
+            color="red.300"
+            bg="red.50"
+            isActive={isDeleteMode}
+            transform={`translateY(40%)`}
+            icon={<DeleteIcon />}
+            _active={{
+              color: 'white',
+              bg: 'red.300',
+            }}
+            _hover={{
+              bg: 'red.100',
+            }}
+            onClick={handleToggleDeleteMode}
+          />
+        </Flex>
+        <VStack
+          mt="8"
+          position="relative"
+          w="80%"
+          minH="60vh"
+          borderRadius="10px"
+          spacing="0"
+        >
           {schedules.map(
             ({ name, isFree, expectedDuration, startTime, uuid }) => {
               const percentage = expectedDuration / (24 * 60 * 60);
 
-              const handleClick = uuid
-                ? () => onSelectEvent(uuid)
-                : // TODO:
-                  console.log;
-              if (isFree) {
+              if (isFree || !uuid) {
                 return (
                   <StackItem
                     key={startTime.getTime()}
                     startTime={startTime}
                     percentage={percentage}
-                    onClick={handleClick}
+                    onClick={() => onSelectEvent(null)}
                     title="free"
                     bg="gray.100"
+                    isDeleteMode={isDeleteMode}
+                    onDeleteButtonClick={() => {}}
                   />
                 );
               }
@@ -106,9 +166,11 @@ export const DailyScheduleShowcase: React.FC<DailyScheduleShowcaseProps> = ({
                   key={startTime.getTime()}
                   startTime={startTime}
                   percentage={percentage}
-                  onClick={handleClick}
+                  onClick={() => onSelectEvent(uuid)}
                   title={name || ''}
                   bg="red.200"
+                  isDeleteMode={isDeleteMode}
+                  onDeleteButtonClick={() => onDeleteButtonClick(uuid)}
                 />
               );
             }

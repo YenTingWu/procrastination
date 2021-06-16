@@ -43,6 +43,8 @@ export const UncontrolledMonthlyDatePicker: React.FC<UncontrolledMonthlyDatePick
           as="span"
           color="gray.500"
           fontSize="0.525rem"
+          _selection={{ background: 'none' }}
+          _hover={{ cursor: 'default' }}
         >
           {d}
         </Box>

@@ -2,7 +2,7 @@ import React, { useMemo, useReducer, Reducer, useCallback } from 'react';
 import { Flex, SimpleGrid, Text } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { WEEKDAYS, MONTHS, DateInfoType } from '@types';
-import { useCurrentDate } from '@globalStore/useCurrentDate';
+import { useCurrentSelectedDate } from '@globalStore/client/useCurrentSelectedDate';
 import { getThisMonthDateInfo } from '@lib/getThisMonthDateInfo';
 import { DateContainer } from './DateContainer';
 
@@ -60,8 +60,8 @@ export interface ControlledMonthlyDatePickerProps {}
  */
 
 export const ControlledMonthlyDatePicker: React.FC<ControlledMonthlyDatePickerProps> = ({}) => {
-  const { currentDate, setDate } = useCurrentDate((s) => ({
-    currentDate: s.currentDate,
+  const { currentSelectedDate, setDate } = useCurrentSelectedDate((s) => ({
+    currentSelectedDate: s.currentSelectedDate,
     setDate: s.setDate,
   }));
 
@@ -74,8 +74,8 @@ export const ControlledMonthlyDatePicker: React.FC<ControlledMonthlyDatePickerPr
      * It's because every time users load into the page with controlled picker, the controlled picker will show the month of currentDate
      */
 
-    year: currentDate.year,
-    month: currentDate.month,
+    year: currentSelectedDate.year,
+    month: currentSelectedDate.month,
   });
 
   const weekdays = useMemo(
@@ -163,7 +163,7 @@ export const ControlledMonthlyDatePicker: React.FC<ControlledMonthlyDatePickerPr
           <DateContainer
             key={`${d.year}_${d.month}_${d.date}`}
             containerDateInfo={d}
-            currentDate={currentDate}
+            currentDate={currentSelectedDate}
             onClick={handleDateContainerClick}
           />
         ))}

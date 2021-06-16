@@ -1,17 +1,15 @@
 import React, {
-  useState,
   useReducer,
   useCallback,
   useRef,
-  Reducer,
   useMemo,
+  Reducer,
 } from 'react';
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
   ModalBody,
   ModalFooter,
   Button,
@@ -22,16 +20,32 @@ import {
   Box,
   Divider,
 } from '@chakra-ui/react';
-import { useField, Formik, FormikProps, Form } from 'formik';
+import axios from 'axios';
+import { useField, Formik, FormikProps, Form, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import format from 'date-fns/fp/format';
-import { FormLabelInputUI } from '@components/AuthForm/FormLabelInputUI';
+import { useQueryClient } from 'react-query';
+import differenceInSeconds from 'date-fns/differenceInSeconds';
+import {
+  FormLabelInputUI,
+  FormLabelTextareaUI,
+} from '@components/AuthForm/FormLabelInputUI';
 import { UncontrolledMonthlyDatePicker } from '@components/DatePicker/UncontrolledMonthlyDatePicker';
 import { createDailyTimeRangeArray } from '@lib/createDailyTimeRangeArray';
 import { compareFormatHoursMinutes } from '@lib/compareFormatHoursMinutes';
+import { getYearObject } from '@lib/getYearObject';
+import { useTokenStore } from '@globalStore/client/useTokenStore';
+import {
+  useSelectDateTimeOpen,
+  OpenedPicker,
+} from '@globalStore/client/useSelectDateTimeOpen';
+import { QUERY_KEYS } from '@globalStore/server/queryKeys';
 import { Schedule, DateInfoType } from '@types';
+import { API_BASE_URL } from '../../config';
 
-type FormState = {
+import { useDebounceCallback } from '@hooks/useDebounceCallback';
+
+export type FormState = {
   name: string;
   description: string;
   startTime: Date;
@@ -85,15 +99,6 @@ const monthlyDatePickerReducer: Reducer<
       throw new Error();
   }
 };
-
-function getYearInfoObject(d: Date) {
-  return {
-    year: d.getFullYear(),
-    month: d.getMonth(),
-    date: d.getDate(),
-  };
-}
-
 interface DateTimePickerInputProps {
   fieldKey: string;
   label: string;
@@ -105,13 +110,18 @@ const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
   fieldKey,
   timeArr,
 }) => {
-  const [isDrop, setDrop] = useState<boolean>(false);
+  const { openedPicker, setSelectOpenedPicker } = useSelectDateTimeOpen(
+    (s) => ({
+      openedPicker: s.openedPicker,
+      setSelectOpenedPicker: s.setSelectOpenedPicker,
+    })
+  );
   const [field, _, helpers] = useField(fieldKey);
   const main = useRef<HTMLDivElement>(null);
 
   const { value }: { value: Date } = field;
 
-  const formattedDate = format('dd / MMM, yyyy HH:mm', value);
+  const formattedDate = format('MMM dd, yyyy HH:mm', value);
   const formattedTime = format('HH:mm', value);
 
   const handleToggleDrop = useCallback(
@@ -127,9 +137,10 @@ const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
 
       if (!matched) return;
 
-      setDrop((s) => !s);
+      // setDrop((s) => !s);
+      setSelectOpenedPicker(fieldKey as OpenedPicker);
     },
-    [main.current]
+    [main.current, fieldKey]
   );
 
   // ------------------------- Monthly date picker controller ------------------------- \\
@@ -164,49 +175,55 @@ const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
       cloneT.setFullYear(year);
       helpers.setValue(cloneT);
     },
-    [state.month]
+    [state.month, helpers]
   );
 
-  const handleSelectTime = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const splitArr = e.target.value.split(':');
-    const hours = parseInt(splitArr[0], 10);
-    const minutes = parseInt(splitArr[1], 10);
+  const handleSelectTime = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const splitArr = e.target.value.split(':');
+      const hours = parseInt(splitArr[0], 10);
+      const minutes = parseInt(splitArr[1], 10);
 
-    if (typeof hours !== 'number' || typeof minutes !== 'number') return;
+      if (typeof hours !== 'number' || typeof minutes !== 'number') return;
 
-    const cloneT = new Date(value);
-    cloneT.setHours(hours);
-    cloneT.setMinutes(minutes);
+      const cloneT = new Date(value);
+      cloneT.setHours(hours);
+      cloneT.setMinutes(minutes);
 
-    helpers.setValue(cloneT);
-  };
+      helpers.setValue(cloneT);
+    },
+    [helpers]
+  );
 
-  const options: JSX.Element[] = useMemo(() => {
-    let arr: JSX.Element[] = [];
-
-    timeArr.forEach((time, i) => {
-      arr.push(
-        <option key={time} value={time}>
-          {time}
-        </option>
-      );
-
-      if (
-        compareFormatHoursMinutes(formattedTime, time) === 1 &&
-        compareFormatHoursMinutes(timeArr[i + 1], formattedTime) === 1
-      ) {
-        arr.push(
-          <option selected key={formattedTime} value={formattedTime}>
-            {formattedTime}
+  const options = useMemo(
+    () =>
+      timeArr.reduce((acc, cur, i) => {
+        acc.push(
+          <option key={cur} value={cur}>
+            {cur}
           </option>
         );
-      }
-    });
-    return arr;
-  }, []);
+
+        /* If cur < formattedTime < next_value_of_cur */
+        /* Then push the formattedTime into accumulator */
+
+        if (
+          compareFormatHoursMinutes(formattedTime, cur) === 1 &&
+          compareFormatHoursMinutes(timeArr[i + 1], formattedTime) === 1
+        ) {
+          acc.push(
+            <option key={formattedTime} value={formattedTime}>
+              {formattedTime}
+            </option>
+          );
+        }
+        return acc;
+      }, [] as Array<JSX.Element>),
+    []
+  );
 
   return (
-    <Flex pl={10} pr={10} gap={10} flexDirection="column" alignItems="center">
+    <Flex pl={10} pr={10} flexDirection="column" alignItems="center">
       <Flex alignItems="center" ref={main} onClick={handleToggleDrop}>
         <FormLabel
           m="0"
@@ -228,7 +245,7 @@ const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
           _selection={{ bg: 'none' }}
         />
       </Flex>
-      {isDrop && (
+      {(fieldKey as OpenedPicker) === openedPicker && (
         <>
           <Divider />
           <Flex alignSelf="stretch" alignItems="center">
@@ -238,7 +255,7 @@ const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
                 month: state.month,
                 year: state.year,
               }}
-              selectedDate={getYearInfoObject(value)}
+              selectedDate={getYearObject(value)}
               onAddMonth={handleAddMonth}
               onMinusMonth={handleMinusMonth}
               onSelectDate={handleSelectDate}
@@ -247,6 +264,7 @@ const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
               ml="5"
               flex={'1 30px'}
               variant="flushed"
+              defaultValue={formattedTime}
               onChange={handleSelectTime}
             >
               {options}
@@ -262,22 +280,96 @@ interface ManipulateEventModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedEvent: Schedule | null;
+  calendarUid: string;
 }
 
 /**
  * ## ManipulateEventModal
  * @param props { isOpen, onClose, selectedEvent }
- * @returns
+ * @returns React.FC
  */
 
 export const ManipulateEventModal: React.FC<ManipulateEventModalProps> = ({
   isOpen = true,
   onClose,
   selectedEvent,
+  calendarUid,
 }) => {
-  const handleSelectStartDate = ({ year, month, date }: DateInfoType) => {};
-
   const timeArr = useMemo(() => createDailyTimeRangeArray(), []);
+  const token = useTokenStore((s) => s.accessToken);
+  const queryClient = useQueryClient();
+
+  const handleEventCreateMutation = useDebounceCallback(
+    async (values: FormState, actions: FormikHelpers<FormState>) => {
+      const expectedDuration = differenceInSeconds(
+        values.endTime,
+        values.startTime
+      );
+
+      if (expectedDuration <= 0) {
+        throw new Error();
+      }
+
+      try {
+        await axios({
+          method: 'POST',
+          baseURL: API_BASE_URL,
+          url: '/event',
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+          data: {
+            event: {
+              ...values,
+              calendarUid,
+              expectedDuration,
+            },
+          },
+        });
+        actions.setSubmitting(false);
+        onClose();
+        queryClient.invalidateQueries(QUERY_KEYS.currentUser);
+      } catch {
+        throw new Error();
+      }
+    },
+    100,
+    [queryClient, token]
+  );
+
+  const handleEventUpdateMutation = useDebounceCallback(
+    async (values: FormState, actions: FormikHelpers<FormState>) => {
+      const expectedDuration = differenceInSeconds(
+        values.endTime,
+        values.startTime
+      );
+
+      if (expectedDuration <= 0) {
+        throw new Error();
+      }
+      try {
+        axios({
+          method: 'PUT',
+          baseURL: API_BASE_URL,
+          url: `/event/${selectedEvent?.uuid || ''}`,
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+          data: {
+            ...values,
+            expectedDuration,
+          },
+        });
+        actions.setSubmitting(false);
+        queryClient.invalidateQueries(QUERY_KEYS.currentUser);
+        onClose();
+      } catch {
+        throw new Error();
+      }
+    },
+    100,
+    [selectedEvent?.uuid, token, queryClient]
+  );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -307,13 +399,20 @@ export const ManipulateEventModal: React.FC<ManipulateEventModalProps> = ({
             startTime: yup.date(),
             endTime: yup.date(),
           })}
-          onSubmit={console.log}
+          onSubmit={
+            selectedEvent?.uuid
+              ? handleEventUpdateMutation
+              : handleEventCreateMutation
+          }
         >
           {(props: FormikProps<FormState>) => {
             return (
               <Form>
-                <ModalHeader>Modal Title</ModalHeader>
-                <ModalCloseButton />
+                <ModalHeader fontSize="3xl">
+                  {selectedEvent == null
+                    ? 'Create an event'
+                    : 'Modify an event'}
+                </ModalHeader>
                 <ModalBody>
                   <FormLabelInputUI
                     name="name"
@@ -321,8 +420,7 @@ export const ManipulateEventModal: React.FC<ManipulateEventModalProps> = ({
                     value={props.values.name}
                     onChange={props.handleChange}
                   />
-
-                  <FormLabelInputUI
+                  <FormLabelTextareaUI
                     name="description"
                     label="Event Description"
                     value={props.values.description}
@@ -346,7 +444,9 @@ export const ManipulateEventModal: React.FC<ManipulateEventModalProps> = ({
                   <Button mr={3} variant="ghost" onClick={onClose}>
                     Close
                   </Button>
-                  <Button colorScheme="blue">Secondary Action</Button>
+                  <Button type="submit" colorScheme="blue">
+                    {selectedEvent == null ? 'Create' : 'Save'}
+                  </Button>
                 </ModalFooter>
               </Form>
             );

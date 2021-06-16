@@ -1,10 +1,11 @@
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { useTokenStore } from '@globalStore/useTokenStore';
-import { API_BASE_URL } from '../config';
-import { revokeRefreshToken } from '../lib/revokeRefreshToken';
+import { useTokenStore } from '@globalStore/client/useTokenStore';
+import { API_BASE_URL } from '../../config';
+import { revokeRefreshToken } from '@lib/revokeRefreshToken';
 import { User } from '@types';
+import { QUERY_KEYS } from './queryKeys';
 
 async function fetchData(token: string) {
   return axios({
@@ -31,12 +32,12 @@ export const useInitialCurrentUser = () => {
   }));
 
   return useQuery<User, Error>(
-    ['currentUser'],
+    [QUERY_KEYS.currentUser],
     async () => {
       try {
         const { data } = await fetchData(accessToken);
         return data;
-      } catch (err) {
+      } catch (err: any) {
         /**
          * If the error is Unauthenticated,
          * try to re-grant accessToken by revoking refreshToken
@@ -45,7 +46,7 @@ export const useInitialCurrentUser = () => {
          * remove accessToken and push back to home page
          */
 
-        if (err.response.status === 401) {
+        if (err?.response.status === 401) {
           const token = await revokeRefreshToken();
 
           if (token) {

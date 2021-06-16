@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useSaveTokenFromQueryString } from '@hooks/useSaveTokenFromQueryString';
-import { useTokenStore } from '@globalStore/useTokenStore';
+import { useTokenStore } from '@globalStore/client/useTokenStore';
 import { Flex, Link } from '@chakra-ui/react';
 import { HeaderController } from '@components/HeadController';
 import { LoadingUI } from '@components/LoadingUI';
-import { NavigationSideBar } from '@components/NavigationSideBar';
 
 export default function Home({}) {
   useSaveTokenFromQueryString();
@@ -40,7 +39,6 @@ export default function Home({}) {
         <NextLink href="/signin">
           <Link>sign in </Link>
         </NextLink>
-        <NavigationSideBar />
         <NextLink href="/signup">
           <Link>sign up </Link>
         </NextLink>

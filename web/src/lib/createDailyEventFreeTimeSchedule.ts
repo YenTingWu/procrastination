@@ -76,7 +76,7 @@ export function createDailyEventFreeTimeSchedules(
     start = currentEventEndTime;
 
     i++;
-  } while (i >= events.length);
+  } while (i <= events.length);
 
   return schedules;
 }
