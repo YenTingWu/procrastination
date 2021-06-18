@@ -1,12 +1,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { useQueryClient, useMutation } from 'react-query';
+import { useQueryClient } from 'react-query';
 import { useDisclosure } from '@chakra-ui/react';
 import { QUERY_KEYS } from '@globalStore/server/queryKeys';
 // compareAsc(a, b)
 // a > b => 1
 // a < b => -1
 // a === b => 0
-import axios from 'axios';
 import compareAsc from 'date-fns/compareAsc';
 import isToday from 'date-fns/isToday';
 import { User } from '@types';
@@ -18,40 +17,37 @@ import { DailyScheduleShowcase } from '@components/ScheduleShowcase/DailySchedul
 import { ManipulateEventModal } from '@components/Modal/ManipulateEventModal';
 import { ConfirmModal } from '@components/Modal/ConfirmModal';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
-import { API_BASE_URL } from 'src/config';
-
-function fetchData(uuid: string, token: string) {
-  return axios({
-    method: 'DELETE',
-    baseURL: API_BASE_URL,
-    url: `/event/${uuid}`,
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-  });
-}
+import { useEventDeleteMutation } from '@globalStore/server/useEventMutation';
 
 /**
- *
- * @returns
+ * ## Calendar
+ * calendar app entry component
+ * @returns React.FC
  */
 
 interface CalendarProps {}
 
 export const Calendar: React.FC<CalendarProps> = ({}) => {
-  const user = useQueryClient().getQueryData<User>(QUERY_KEYS.currentUser);
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  /*
+    #####                               #     #
+   #     # #####   ##   ##### ######    #     #  ####   ####  #    #  ####
+   #         #    #  #    #   #         #     # #    # #    # #   #  #
+    #####    #   #    #   #   #####     ####### #    # #    # ####    ####
+         #   #   ######   #   #         #     # #    # #    # #  #        #
+   #     #   #   #    #   #   #         #     # #    # #    # #   #  #    #
+    #####    #   #    #   #   ######    #     #  ####   ####  #    #  ####
+  */
 
   const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<User>(QUERY_KEYS.currentUser);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
   const token = useTokenStore((s) => s.accessToken);
-  const { mutate, isLoading } = useMutation(
-    ({ id, token }: { id: string; token: string }) => fetchData(id, token),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(QUERY_KEYS.currentUser);
-      },
-    }
-  );
+
+  const {
+    mutate: deleteEventMutate,
+    isLoading: isDeletingEventLoading,
+  } = useEventDeleteMutation(queryClient);
 
   /**
             ███╗   ███╗ ██████╗ ██████╗  █████╗ ██╗
@@ -95,7 +91,7 @@ export const Calendar: React.FC<CalendarProps> = ({}) => {
 
   const handleConfirmClick = useCallback(() => {
     if (selectedEventId == null) return;
-    mutate({ id: selectedEventId, token });
+    deleteEventMutate({ id: selectedEventId, token });
     handleConfirmModalClose();
   }, [selectedEventId, token]);
 
@@ -103,8 +99,16 @@ export const Calendar: React.FC<CalendarProps> = ({}) => {
     return <LoadingUI />;
   }
 
-  const { avatar, displayName, calendars } = user;
+  /*
+    #####    ##   #####   ##       ####   ####  #    # ##### #####   ####  #      #
+    #    #  #  #    #    #  #     #    # #    # ##   #   #   #    # #    # #      #
+    #    # #    #   #   #    #    #      #    # # #  #   #   #    # #    # #      #
+    #    # ######   #   ######    #      #    # #  # #   #   #####  #    # #      #
+    #    # #    #   #   #    #    #    # #    # #   ##   #   #   #  #    # #      #
+    #####  #    #   #   #    #     ####   ####  #    #   #   #    #  ####  ###### ######
+  */
 
+  const { avatar, displayName, calendars } = user;
   const { events, uuid } = calendars[0];
 
   const sortedEvents = useMemo(
@@ -116,7 +120,9 @@ export const Calendar: React.FC<CalendarProps> = ({}) => {
           endTime: new Date(e.endTime),
           isFree: false,
         }))
-        .filter(({ startTime }) => isToday(startTime))
+        .filter(
+          ({ startTime, endTime }) => isToday(startTime) || isToday(endTime)
+        )
         .sort((a, b) => compareAsc(a.startTime, b.startTime)),
     [events]
   );
@@ -156,7 +162,7 @@ export const Calendar: React.FC<CalendarProps> = ({}) => {
         onClose={handleConfirmModalClose}
         onConfirm={handleConfirmClick}
         content={'Would you like to delete the event?'}
-        isLoading={isLoading}
+        isLoading={isDeletingEventLoading}
       />
     </AppDefaultLayoutDesktop>
   );

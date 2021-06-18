@@ -5,8 +5,8 @@ import { useFormik, FormikHelpers } from 'formik';
 import { Button, Flex, Box } from '@chakra-ui/react';
 import { StyledForm, SocialLoginType } from './SigninForm';
 import { useDebounceCallback } from '@hooks/useDebounceCallback';
-import { FormLabelInputUI } from './FormLabelInputUI';
-import { LogoButton } from './LogoButton';
+import { FormLabelInputUI } from '@components/Form/FormLabelInputUI';
+import { LogoButton } from '@components/Form/LogoButton';
 import { GoogleIcon } from '@components/Icon';
 import { API_BASE_URL } from '../../config';
 

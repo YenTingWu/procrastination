@@ -7,8 +7,18 @@ import {
 } from 'react-router-dom';
 import { Calendar } from './Calendar';
 import { isServer } from '../lib/isServer';
-import { AppDefaultLayoutDesktop } from '@components/Layout/AppDefaultLayoutDesktop';
-import { NavigationSideBar } from '@components/NavigationSideBar';
+import { Test } from '@screens/Test';
+
+function renderBasePath() {
+  const key = '@d_path';
+  const path = localStorage.getItem(key);
+
+  if (path) {
+    localStorage.setItem(key, '');
+    return <Redirect to={{ pathname: path }} />;
+  }
+  return <Calendar />;
+}
 
 /**
  * For Routing
@@ -25,23 +35,3 @@ const Routes = () => {
 };
 
 export default Routes;
-
-function Test() {
-  return (
-    <AppDefaultLayoutDesktop>
-      <NavigationSideBar />
-      Test Page
-    </AppDefaultLayoutDesktop>
-  );
-}
-
-function renderBasePath() {
-  const key = '@d_path';
-  const path = localStorage.getItem(key);
-
-  if (path) {
-    localStorage.setItem(key, '');
-    return <Redirect to={{ pathname: path }} />;
-  }
-  return <Calendar />;
-}

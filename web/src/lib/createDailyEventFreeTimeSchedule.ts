@@ -34,11 +34,15 @@ export function createDailyEventFreeTimeSchedules(
   let schedules: Schedule[] = [];
   const n = date || Date.now();
   let start = startOfDay(n);
-  let end = endOfDay(n);
+  const end = endOfDay(n);
 
   do {
+    // If the startTime is over today, then break the loop
+    if (compareAsc(start, end) === 1) break;
+
     const event = events[i];
 
+    // If no event exist anymore, push an empty item and break the loop
     if (event == null) {
       const occupationForEmptyTime = {
         startTime: start,
@@ -55,6 +59,12 @@ export function createDailyEventFreeTimeSchedules(
       endTime: currentEventEndTime,
     } = event;
 
+    /**
+     * If the event's startTime is equal to startOfDay,
+     *  push the event into schedules directly.
+     *  No need to push any other empty event
+     */
+
     if (compareAsc(start, currentEventStartTime) === 0) {
       schedules.push(event);
       start = currentEventEndTime;
@@ -62,6 +72,28 @@ export function createDailyEventFreeTimeSchedules(
       i++;
       continue;
     }
+
+    /**
+     * If the startOfDay is small than event startTime,
+     * which means that the duration of the event cross at least two days.
+     *
+     * In this case, change the event startTime to startOfDay,
+     * meanwhile modify the expectedDuration.
+     */
+
+    if (compareAsc(start, currentEventStartTime) === 1) {
+      event.startTime = start;
+      event.expectedDuration = differenceInSeconds(currentEventEndTime, start);
+      schedules.push(event);
+      start = currentEventEndTime;
+
+      i++;
+      continue;
+    }
+
+    /**
+     * Use empty event to occupy the time which has no event
+     */
 
     const occupationForEmptyTime = {
       startTime: start,
