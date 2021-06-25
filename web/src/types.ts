@@ -8,6 +8,12 @@ export enum WEEKDAYS {
   SAT = 'SAT',
 }
 
+export enum EventStatus {
+  CREATED = 'CREATED',
+  WORKING = 'WORKING',
+  COMPLETED = 'COMPLETED',
+}
+
 export enum MONTHS {
   Jan,
   Feb,
@@ -43,6 +49,10 @@ export type Event = {
   expectedDuration: number;
   description: string;
   isProcrastination: boolean;
+  status: EventStatus;
+  type: 'to_do' | 'event';
+  parents?: string[];
+  children?: string[];
 };
 
 export type Schedule = {

@@ -11,11 +11,11 @@ import { EventCategory } from './EventCategory';
 import { EventCategoryItem } from './EventCategoryItem';
 
 @Entity('event_type')
-export class EventType extends BaseEntity {
+export class Field extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Event, (e) => e.eventType)
+  @ManyToOne(() => Event, (e) => e.fields)
   eventId: Event;
 
   @OneToOne(() => EventCategory)

@@ -1,8 +1,7 @@
 import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEventEntity } from './module/BaseEventEntity';
 import { Calendar } from './Calendar';
-import { SubEvent } from './SubEvent';
-import { EventType } from './EventType';
+import { Field } from './Field';
 
 @Entity('events')
 export class Event extends BaseEventEntity {
@@ -11,18 +10,15 @@ export class Event extends BaseEventEntity {
   @Column({ type: 'timestamp with time zone' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp with time zone' })
+  @Column({ type: 'timestamp with time zone', nullable: true })
   startTime: Date;
 
-  @Column({ type: 'timestamp with time zone' })
+  @Column({ type: 'timestamp with time zone', nullable: true })
   endTime: Date;
 
   @ManyToOne(() => Calendar, (calendar) => calendar.events, { cascade: true })
   calendar: Calendar;
 
-  @OneToMany(() => SubEvent, (s) => s.event)
-  subEvents: SubEvent[];
-
-  @OneToMany(() => EventType, (e) => e.eventId)
-  eventType: EventType[];
+  @OneToMany(() => Field, (e) => e.eventId)
+  fields: Field[];
 }

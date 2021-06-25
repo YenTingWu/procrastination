@@ -1,23 +1,15 @@
-import { useRouter } from 'next/router';
 import { HeaderController } from '@components/HeadController';
+import { AppDefaultLayoutDesktop } from '@components/Layout/AppDefaultLayoutDesktop';
 import { SignUpForm } from '@components/AuthForm/SignupForm';
-import { Flex } from '@chakra-ui/react';
 
 export default function SignUp({}) {
   return (
-    <>
+    <AppDefaultLayoutDesktop center={true}>
       <HeaderController
         title="Sign Up"
         description="This is a procrastination auth page"
       />
-      <Flex
-        minH="100vh"
-        minW="100%"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <SignUpForm />
-      </Flex>
-    </>
+      <SignUpForm />
+    </AppDefaultLayoutDesktop>
   );
 }

@@ -12,7 +12,7 @@ interface ConfirmModalProps {
   isOpen: boolean;
   content: string;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   isLoading?: boolean;
 }
 

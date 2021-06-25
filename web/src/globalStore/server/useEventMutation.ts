@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { useMutation, QueryClient } from 'react-query';
+import { useMutation } from 'react-query';
+import type { QueryClient } from 'react-query';
 import { API_BASE_URL } from '../../config';
 import { QUERY_KEYS } from './queryKeys';
 

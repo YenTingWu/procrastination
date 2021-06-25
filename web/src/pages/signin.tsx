@@ -1,22 +1,15 @@
 import { HeaderController } from '@components/HeadController';
+import { AppDefaultLayoutDesktop } from '@components/Layout/AppDefaultLayoutDesktop';
 import { SignInForm } from '@components/AuthForm/SigninForm';
-import { Flex } from '@chakra-ui/react';
 
 export default function SignIn({}) {
   return (
-    <>
+    <AppDefaultLayoutDesktop center={true}>
       <HeaderController
         title="Sign In"
         description="This is a procrastination auth page"
       />
-      <Flex
-        minH="100vh"
-        minW="100%"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <SignInForm />
-      </Flex>
-    </>
+      <SignInForm />
+    </AppDefaultLayoutDesktop>
   );
 }

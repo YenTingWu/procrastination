@@ -6,12 +6,13 @@ import {
   Generated,
 } from 'typeorm';
 
-enum Status {
-  CREATED = 'created',
-  WORKING = 'working',
-  COMPLETED = 'completed',
+export enum Status {
+  CREATED = 'CREATED',
+  WORKING = 'WORKING',
+  COMPLETED = 'COMPLETED',
 }
 
+export type EventType = 'to_do' | 'event';
 @Entity()
 export class BaseEventEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -35,6 +36,15 @@ export class BaseEventEntity extends BaseEntity {
 
   @Column({ type: 'int', default: 0 })
   duration: number;
+
+  @Column({ type: 'varchar' })
+  type: EventType;
+
+  @Column('text', { array: true, nullable: true })
+  parents: string[];
+
+  @Column('text', { array: true, nullable: true })
+  children: string[];
 
   @Column({
     type: 'enum',

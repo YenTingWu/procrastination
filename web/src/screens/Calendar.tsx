@@ -121,7 +121,8 @@ export const Calendar: React.FC<CalendarProps> = ({}) => {
           isFree: false,
         }))
         .filter(
-          ({ startTime, endTime }) => isToday(startTime) || isToday(endTime)
+          ({ startTime, endTime, type }) =>
+            type === 'event' && (isToday(startTime) || isToday(endTime))
         )
         .sort((a, b) => compareAsc(a.startTime, b.startTime)),
     [events]

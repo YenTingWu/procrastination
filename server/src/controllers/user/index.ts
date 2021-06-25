@@ -1,10 +1,35 @@
 import { Request, Response } from 'express';
 import setHours from 'date-fns/fp/setHours';
 import { getRepository } from 'typeorm';
-
 import { User } from '../../entity/User';
 import { Calendar } from '../../entity/Calendar';
 import { Event } from '../../entity/Event';
+import { Status } from '../../entity/module/BaseEventEntity';
+
+//TODO: delete when the create-todo functionality is implemented
+const createTodos = async (): Promise<Event[]> => {
+  const now = new Date();
+  let list = [];
+  const statusArr = Object.values(Status).map((v) => v);
+
+  for (let i = 0; i < 3; i++) {
+    let newTodo = await Event.create({
+      name: `New Event original_${statusArr[i]}`,
+      type: 'to_do',
+      description: `This is a new todo original_${statusArr[i]}`,
+      expectedDuration: 8 * 60 * 60,
+      duration: 0,
+      createdAt: now,
+      startTime: setHours(8, now),
+      endTime: setHours(16, now),
+      isProcrastinationTime: false,
+      status: statusArr[i],
+    }).save();
+    list.push(newTodo);
+  }
+
+  return list;
+};
 
 export const getUserData = async (_: Request, res: Response) => {
   const { payload } = res.locals;
@@ -34,6 +59,7 @@ export const getUserData = async (_: Request, res: Response) => {
 
       let newEvent = await Event.create({
         name: 'New event',
+        type: 'event',
         description: 'This is an event example',
         expectedDuration: 8 * 60 * 60,
         duration: 0,
@@ -43,13 +69,16 @@ export const getUserData = async (_: Request, res: Response) => {
         isProcrastinationTime: false,
       });
 
+      //TODO: delete when the create-todo functionality is implemented
+      const todos = await createTodos();
+
       let newCalendar = await Calendar.create({
         name: 'The new calendar',
         createdAt: now,
         modifiedAt: now,
       });
 
-      newCalendar.events = [newEvent];
+      newCalendar.events = [newEvent, ...todos];
       user.calendars.push(newCalendar);
 
       await Event.save(newEvent);

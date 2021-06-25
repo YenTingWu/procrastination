@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -19,7 +19,6 @@ import {
   FormLabelTextareaUI,
 } from '@components/Form/FormLabelInputUI';
 import { DateTimePickerInput } from '@components/Form/DateTimePickerInput';
-import { createDailyTimeRangeArray } from '@lib/createDailyTimeRangeArray';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
 import { useSelectDateTimeOpen } from '@globalStore/client/useSelectDateTimeOpen';
 import { QUERY_KEYS } from '@globalStore/server/queryKeys';
@@ -55,7 +54,6 @@ export const ManipulateEventModal: React.FC<ManipulateEventModalProps> = ({
   calendarUid,
 }) => {
   const queryClient = useQueryClient();
-  const timeArr = useMemo(() => createDailyTimeRangeArray(), []);
   const token = useTokenStore((s) => s.accessToken);
   const setSelectOpenedPicker = useSelectDateTimeOpen(
     (s) => s.setSelectOpenedPicker
@@ -85,6 +83,7 @@ export const ManipulateEventModal: React.FC<ManipulateEventModalProps> = ({
               ...values,
               calendarUid,
               expectedDuration,
+              type: 'event',
             },
           },
         });
@@ -195,15 +194,10 @@ export const ManipulateEventModal: React.FC<ManipulateEventModalProps> = ({
                   />
                   <Box mt="5">
                     <DateTimePickerInput
-                      timeArr={timeArr}
                       fieldKey="startTime"
                       label="Start Time"
                     />
-                    <DateTimePickerInput
-                      timeArr={timeArr}
-                      fieldKey="endTime"
-                      label="End Time"
-                    />
+                    <DateTimePickerInput fieldKey="endTime" label="End Time" />
                   </Box>
                 </ModalBody>
 

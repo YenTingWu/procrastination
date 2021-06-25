@@ -6,12 +6,13 @@ import {
   Heading,
   VStack,
   Text,
-  IconButton,
   Fade,
   BackgroundProps,
 } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { Schedule } from '@types';
+import { DeleteButton } from '@components/IconButton';
+
 interface StackItemProps {
   title: string;
   percentage: number;
@@ -69,6 +70,16 @@ const StackItem: React.FC<StackItemProps> = ({
   );
 };
 
+/*
+  #     #                     #####
+  ##   ##   ##   # #    #    #     #  ####  #    # #####   ####  #    # ###### #    # #####
+  # # # #  #  #  # ##   #    #       #    # ##  ## #    # #    # ##   # #      ##   #   #
+  #  #  # #    # # # #  #    #       #    # # ## # #    # #    # # #  # #####  # #  #   #
+  #     # ###### # #  # #    #       #    # #    # #####  #    # #  # # #      #  # #   #
+  #     # #    # # #   ##    #     # #    # #    # #      #    # #   ## #      #   ##   #
+  #     # #    # # #    #     #####   ####  #    # #       ####  #    # ###### #    #   #
+*/
+
 interface DailyScheduleShowcaseProps {
   schedules: Schedule[];
   onSelectEvent: (value: string | null) => void;
@@ -77,7 +88,7 @@ interface DailyScheduleShowcaseProps {
 
 /**
  * ## DailyScheduleShowcase
- * @param {{{ schedules, onSelectEvent }
+ * @param {{{ schedules, onSelectEvent }}}
  * @returns React.FC
  */
 
@@ -88,10 +99,7 @@ export const DailyScheduleShowcase: React.FC<DailyScheduleShowcaseProps> = ({
 }) => {
   const [isDeleteMode, setDeleteMode] = useState<boolean>(false);
 
-  const handleToggleDeleteMode = useCallback(
-    () => setDeleteMode((s) => !s),
-    []
-  );
+  const toggleDeleteMode = useCallback(() => setDeleteMode((s) => !s), []);
 
   useEffect(() => {
     if (schedules.length) {
@@ -115,24 +123,14 @@ export const DailyScheduleShowcase: React.FC<DailyScheduleShowcaseProps> = ({
           <Heading fontSize="5xl" letterSpacing=".25rem">
             Today Schedule
           </Heading>
-          <IconButton
-            aria-label="delete-button"
-            position="absolute"
-            right="10"
-            size="sm"
-            color="red.300"
-            bg="red.50"
-            isActive={isDeleteMode}
-            transform={`translateY(40%)`}
-            icon={<DeleteIcon />}
-            _active={{
-              color: 'white',
-              bg: 'red.300',
+          <DeleteButton
+            isDeleteMode={isDeleteMode}
+            onClick={toggleDeleteMode}
+            style={{
+              position: 'absolute',
+              right: '10',
+              transform: `translateY(40%)`,
             }}
-            _hover={{
-              bg: 'red.100',
-            }}
-            onClick={handleToggleDeleteMode}
           />
         </Flex>
         <VStack

@@ -11,6 +11,7 @@ import format from 'date-fns/fp/format';
 import { UncontrolledMonthlyDatePicker } from '@components/DatePicker/UncontrolledMonthlyDatePicker';
 import { compareFormatHoursMinutes } from '@lib/compareFormatHoursMinutes';
 import { getYearObject } from '@lib/getYearObject';
+import { createDailyTimeRangeArray } from '@lib/createDailyTimeRangeArray';
 import {
   useSelectDateTimeOpen,
   OpenedPicker,
@@ -74,7 +75,6 @@ const monthlyDatePickerReducer: Reducer<
 interface DateTimePickerInputProps {
   fieldKey: string;
   label: string;
-  timeArr: string[];
 }
 
 /**
@@ -87,7 +87,6 @@ interface DateTimePickerInputProps {
 export const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
   label,
   fieldKey,
-  timeArr,
 }) => {
   const { openedPicker, setSelectOpenedPicker } = useSelectDateTimeOpen(
     (s) => ({
@@ -174,32 +173,40 @@ export const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
     [helpers]
   );
 
-  const options = useMemo(
-    () =>
-      timeArr.reduce((acc, cur, i) => {
+  const options = useMemo(() => {
+    const timeArr = createDailyTimeRangeArray();
+    return timeArr.reduce((acc, cur, i) => {
+      acc.push(
+        <option key={cur} value={cur}>
+          {cur}
+        </option>
+      );
+
+      /**
+       * formattedTime is "the very current time" for creating mode,
+       * when it is a modifying mode, it's the event's "startTime" and "endTime"
+       *
+       * If cur < formattedTime < next_value_of_cur
+       * then push the formattedTime into accumulator
+       *
+       * If cur < formattedTime, and cur is the last value of the array
+       * push the formattedTime into accumulator as well
+       */
+
+      if (
+        compareFormatHoursMinutes(formattedTime, cur) === 1 &&
+        (timeArr[i + 1] == null ||
+          compareFormatHoursMinutes(formattedTime, timeArr[i + 1]) === -1)
+      ) {
         acc.push(
-          <option key={cur} value={cur}>
-            {cur}
+          <option key={formattedTime} value={formattedTime}>
+            {formattedTime}
           </option>
         );
-
-        /* If cur < formattedTime < next_value_of_cur */
-        /* Then push the formattedTime into accumulator */
-
-        if (
-          compareFormatHoursMinutes(formattedTime, cur) === 1 &&
-          compareFormatHoursMinutes(timeArr[i + 1], formattedTime) === 1
-        ) {
-          acc.push(
-            <option key={formattedTime} value={formattedTime}>
-              {formattedTime}
-            </option>
-          );
-        }
-        return acc;
-      }, [] as Array<JSX.Element>),
-    []
-  );
+      }
+      return acc;
+    }, [] as Array<JSX.Element>);
+  }, []);
 
   return (
     <Flex pl={10} pr={10} flexDirection="column" alignItems="center">
