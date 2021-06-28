@@ -8,7 +8,12 @@ import { Event } from '@types';
 import { getCombinedStyle } from './lib/getCombinedStyle';
 import ListStyle from './DroppableList.style.module.css';
 import { DeleteModeContextStore } from './DroppableTodoMainSection';
-import { DeleteButtonClickContextStore } from '@screens/Test';
+import memorize from 'memoize-one';
+
+export type ModalController = {
+  onManipulateTodoModalOpen: (uuid?: string) => void;
+  onConfirmModalOpen: (id: string) => void;
+};
 
 /**
  * ## formatSecond
@@ -37,6 +42,7 @@ interface VirtualListItemProps {
   };
   style: React.CSSProperties;
   isDragging: boolean;
+  modalControllers: ModalController;
 }
 
 /**
@@ -50,16 +56,24 @@ const VirtualListItem = ({
   style,
   info: { name, description, expectedDuration, uuid },
   isDragging,
+  modalControllers: { onConfirmModalOpen, onManipulateTodoModalOpen },
 }: VirtualListItemProps) => {
+  const { isDeleteMode } = useContext(DeleteModeContextStore);
   const formattedExpectedDuration = useMemo(
     () => formatSecond(expectedDuration),
     [expectedDuration]
   );
-  const { isDeleteMode } = useContext(DeleteModeContextStore);
-  const { onConfirmModalOpen } = useContext(DeleteButtonClickContextStore);
 
-  const handleConfirmModalOpen = () => {
+  const handleConfirmModalOpen = (e: React.MouseEvent<HTMLOrSVGElement>) => {
+    e.preventDefault();
     onConfirmModalOpen(uuid);
+  };
+
+  const handleManipulateTodoModalOpen = (
+    e: React.MouseEvent<HTMLDivElement>
+  ) => {
+    e.preventDefault();
+    onManipulateTodoModalOpen(uuid);
   };
 
   return (
@@ -68,11 +82,17 @@ const VirtualListItem = ({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       style={getCombinedStyle({ provided, style, isDragging })}
+      _hover={{
+        cursor: 'pointer',
+      }}
+      onClick={isDeleteMode ? () => {} : handleManipulateTodoModalOpen}
     >
       <Box
         flex="8 1 0"
-        _selection={{
-          bg: 'none',
+        sx={{
+          '*::selection': {
+            bg: 'none',
+          },
         }}
       >
         <Flex>
@@ -112,8 +132,13 @@ const VirtualListItem = ({
   );
 };
 
+type DataType = {
+  list: Event[];
+  modalControllers: ModalController;
+};
+
 interface VirtualListRowProps {
-  data: Event[];
+  data: DataType;
   index: number;
   style: React.CSSProperties;
 }
@@ -126,8 +151,8 @@ interface VirtualListRowProps {
  */
 
 const VirtualListRow = React.memo(
-  ({ data, index, style }: VirtualListRowProps) => {
-    const { name, description, expectedDuration, uuid } = data[index];
+  ({ data: { list, modalControllers }, index, style }: VirtualListRowProps) => {
+    const { name, description, expectedDuration, uuid } = list[index];
 
     return (
       <Draggable
@@ -146,6 +171,7 @@ const VirtualListRow = React.memo(
             style={style}
             provided={provided}
             isDragging={snapshot.isDragging}
+            modalControllers={modalControllers}
           />
         )}
       </Draggable>
@@ -164,9 +190,20 @@ const VirtualListRow = React.memo(
  #     # #    # # #    #     #####   ####  #    # #       ####  #    # ###### #    #   #
 */
 
+// This helper function memoizes incoming props,
+// To avoid causing unnecessary re-renders pure Row components.
+
+const createItemData = memorize(
+  (list: Array<Event>, modalControllers: ModalController) => ({
+    list,
+    modalControllers,
+  })
+);
+
 interface DroppableListProps {
   droppableId: string;
-  data: Array<Event>;
+  list: Array<Event>;
+  modalControllers: ModalController;
 }
 
 /**
@@ -177,15 +214,18 @@ interface DroppableListProps {
 
 export const DroppableList: React.FC<DroppableListProps> = ({
   droppableId,
-  data,
+  list,
+  modalControllers,
 }) => {
+  const itemData = createItemData(list, modalControllers);
+
   return (
     <Droppable
       droppableId={droppableId}
       type="PERSON"
       mode="virtual"
       renderClone={(provided, _snapshot, rubric) => {
-        const { name, description, expectedDuration } = data[
+        const { name, description, expectedDuration } = list[
           rubric.source.index
         ];
         const formattedExpectedDuration = useMemo(
@@ -252,8 +292,8 @@ export const DroppableList: React.FC<DroppableListProps> = ({
               height={400}
               width={300}
               className={ListStyle['task-left']}
-              itemCount={data.length}
-              itemData={data}
+              itemCount={list.length}
+              itemData={itemData}
               itemSize={80}
               outerRef={provided.innerRef}
             >

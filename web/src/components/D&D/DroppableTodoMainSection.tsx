@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { Flex, Grid } from '@chakra-ui/react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { DroppableList } from '@components/D&D/DroppableList';
+import { DroppableList, ModalController } from '@components/D&D/DroppableList';
 import { DeleteButton, CreateButton } from '@components/IconButton';
 import { reorderList } from './lib/reorderList';
 import type { QueryClient } from 'react-query';
@@ -18,7 +18,6 @@ import { useTokenStore } from '@globalStore/client/useTokenStore';
 
 interface DeleteModeContext {
   isDeleteMode: boolean;
-  setDeleteMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const DeleteModeContextStore = createContext<DeleteModeContext>(
@@ -50,10 +49,14 @@ type DragAndDropAction =
       payload: Array<Event>;
     };
 
-function getList(id: string, state: DragAndDropState): Array<Event> {
-  if (id === EventStatus.CREATED) return [...state[EventStatus.CREATED]];
-  if (id === EventStatus.WORKING) return [...state[EventStatus.WORKING]];
-  if (id === EventStatus.COMPLETED) return [...state[EventStatus.COMPLETED]];
+function getStatusList(
+  status: EventStatus,
+  state: DragAndDropState
+): Array<Event> {
+  if (status === EventStatus.CREATED) return [...state[EventStatus.CREATED]];
+  if (status === EventStatus.WORKING) return [...state[EventStatus.WORKING]];
+  if (status === EventStatus.COMPLETED)
+    return [...state[EventStatus.COMPLETED]];
   throw new Error();
 }
 
@@ -66,16 +69,19 @@ const dragAndDropControllerReducer: Reducer<
       const { toId, toIndex, fromId, fromIndex } = action.payload;
 
       if (toId === fromId) {
-        let list = getList(toId, state);
-        const newList = reorderList(list, fromIndex, toIndex);
+        const newList = reorderList(
+          getStatusList(toId, state),
+          fromIndex,
+          toIndex
+        );
 
         return {
           ...state,
           [toId]: newList,
         };
       }
-      let fromList = getList(fromId, state);
-      let toList = getList(toId, state);
+      let fromList = getStatusList(fromId, state);
+      let toList = getStatusList(toId, state);
       const [removedItem] = fromList.splice(fromIndex, 1);
       toList.splice(toIndex, 0, removedItem);
 
@@ -121,18 +127,10 @@ const dragAndDropControllerReducer: Reducer<
  #     # #    # # #    #     #####   ####  #    # #       ####  #    # ###### #    #   #
 */
 
-type UpdatableField = {
-  name: string;
-  description: string;
-  expectedDuration: number;
-  duration: number;
-  status: EventStatus;
-};
-
 interface DroppableTodoMainSectionProps {
   todoList: Array<Event>;
   queryClient: QueryClient;
-  onCreateTodoModalOpen: () => void;
+  modalControllers: ModalController;
 }
 
 /**
@@ -144,7 +142,7 @@ interface DroppableTodoMainSectionProps {
 export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> = ({
   todoList,
   queryClient,
-  onCreateTodoModalOpen,
+  modalControllers,
 }) => {
   const [isSwitchStatus, setSwitchStatus] = useState<boolean>(false);
   const [isDeleteMode, setDeleteMode] = useState<boolean>(false);
@@ -195,8 +193,11 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
       const { droppableId: toStatus, index: toIndex } = result.destination;
 
       // Server Store
-      const target = getList(fromStatus, droppableListState);
-      const { uuid } = getList(fromStatus, droppableListState)[fromIndex];
+      const fromList = getStatusList(
+        fromStatus as EventStatus,
+        droppableListState
+      );
+      const { uuid } = fromList[fromIndex];
       let updatedStore = {
         status: toStatus as EventStatus,
       };
@@ -226,7 +227,7 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
   const toggleDeleteMode = useCallback(() => setDeleteMode((s) => !s), []);
 
   return (
-    <DeleteModeContextStore.Provider value={{ isDeleteMode, setDeleteMode }}>
+    <DeleteModeContextStore.Provider value={{ isDeleteMode }}>
       <Flex flex="1 1 0" alignItems="center">
         <Flex
           flex="1"
@@ -245,7 +246,7 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
             pb="4"
           >
             <CreateButton
-              onClick={onCreateTodoModalOpen}
+              onClick={modalControllers.onManipulateTodoModalOpen}
               style={{ size: 'md' }}
             />
             <DeleteButton
@@ -261,8 +262,9 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
               {Object.values(EventStatus).map((id) => (
                 <DroppableList
                   key={id}
-                  data={droppableListState[id]}
+                  list={droppableListState[id]}
                   droppableId={id}
+                  modalControllers={modalControllers}
                 />
               ))}
             </Grid>

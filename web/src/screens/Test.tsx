@@ -1,7 +1,8 @@
-import React, { useState, useMemo, createContext, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useQueryClient } from 'react-query';
 import { useDisclosure } from '@chakra-ui/react';
 import { useEventDeleteMutation } from '@globalStore/server/useEventMutation';
+import { QUERY_KEYS } from '@globalStore/server/queryKeys';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
 import { AppDefaultLayoutDesktop } from '@components/Layout/AppDefaultLayoutDesktop';
 import { NavigationSideBar } from '@components/NavigationSideBar';
@@ -11,17 +12,9 @@ import { ConfirmModal } from '@components/Modal/ConfirmModal';
 import { CreateTodoModal } from '@components/Modal/CreateTodoModal';
 import { User } from '@types';
 
-interface DeleteButtonClickContext {
-  onConfirmModalOpen: (id: string) => void;
-}
-
-export const DeleteButtonClickContextStore = createContext(
-  {} as DeleteButtonClickContext
-);
-
 export function Test() {
   const queryClient = useQueryClient();
-  const user = queryClient.getQueryData<User>('currentUser');
+  const user = queryClient.getQueryData<User>(QUERY_KEYS.currentUser);
   const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null);
   const token = useTokenStore((s) => s.accessToken);
   const {
@@ -31,9 +24,9 @@ export function Test() {
   } = useDisclosure();
 
   const {
-    isOpen: isCreateTodoModalOpen,
-    onClose: onCreateTodoModalClose,
-    onOpen: onCreateTodoModalOpen,
+    isOpen: isManipulateTodoModalOpen,
+    onClose: onManipulateTodoModalClose,
+    onOpen: onManipulateTodoModalOpen,
   } = useDisclosure();
 
   const {
@@ -51,7 +44,18 @@ export function Test() {
     onConfirmModalClose();
   }, []);
 
+  const handleManipulateTodoModalOpen = useCallback((uuid?: string) => {
+    if (uuid) setSelectedTodoId(uuid);
+    onManipulateTodoModalOpen();
+  }, []);
+
+  const handleManipulateTodoModalClose = useCallback(() => {
+    onManipulateTodoModalClose();
+    setSelectedTodoId(null);
+  }, []);
+
   const handleConfirm = useCallback(async () => {
+    console.log(selectedTodoId);
     if (selectedTodoId == null) return;
     try {
       await eventDeleteMutate({ token, id: selectedTodoId });
@@ -79,29 +83,28 @@ export function Test() {
 
   return (
     <AppDefaultLayoutDesktop>
-      <DeleteButtonClickContextStore.Provider
-        value={{ onConfirmModalOpen: handleConfirmModalOpen }}
-      >
-        <NavigationSideBar avatar={avatar || ''} placeholder={displayName} />
-        <DroppableTodoMainSection
-          queryClient={queryClient}
-          todoList={todoList}
-          onCreateTodoModalOpen={onCreateTodoModalOpen}
-        />
-        <ConfirmModal
-          isOpen={isConfirmModalOpen}
-          onClose={handleConfirmModalClose}
-          onConfirm={handleConfirm}
-          isLoading={isDeletingEventLoading}
-          content={'Would you like to delete the event?'}
-        />
-        <CreateTodoModal
-          isOpen={isCreateTodoModalOpen}
-          onClose={onCreateTodoModalClose}
-          calendarUid={uuid}
-          selectedEvent={selectedTodo}
-        />
-      </DeleteButtonClickContextStore.Provider>
+      <NavigationSideBar avatar={avatar || ''} placeholder={displayName} />
+      <DroppableTodoMainSection
+        queryClient={queryClient}
+        todoList={todoList}
+        modalControllers={{
+          onManipulateTodoModalOpen: handleManipulateTodoModalOpen,
+          onConfirmModalOpen: handleConfirmModalOpen,
+        }}
+      />
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={handleConfirmModalClose}
+        onConfirm={handleConfirm}
+        isLoading={isDeletingEventLoading}
+        content={'Would you like to delete the event?'}
+      />
+      <CreateTodoModal
+        isOpen={isManipulateTodoModalOpen}
+        onClose={handleManipulateTodoModalClose}
+        calendarUid={uuid}
+        selectedEvent={selectedTodo}
+      />
     </AppDefaultLayoutDesktop>
   );
 }
