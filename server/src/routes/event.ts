@@ -5,17 +5,20 @@ import {
   putModifyEvent,
   deleteEvent,
   postCreateTodo,
-  patchUpdateTodo,
+  patchModifyTodo,
+  putUpdateTodo,
 } from '../controllers/event';
 
 const router = Router();
 router.use(isAuth);
 
-router.post('/', postCreateNewEvent);
-router.put('/:uid', putModifyEvent);
-router.delete('/:uid', deleteEvent);
+router.post('/e', postCreateNewEvent);
+//TODO: should be patch
+router.put('/e/:uid', putModifyEvent);
+router.delete('/e/:uid', deleteEvent);
 
 router.post('/todo', postCreateTodo);
-router.patch('/todo', patchUpdateTodo);
+router.patch('/todo/:uid', patchModifyTodo);
+router.put('/todo', putUpdateTodo);
 
 export default router;

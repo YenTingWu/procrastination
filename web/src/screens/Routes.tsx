@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import { Calendar } from './Calendar';
 import { isServer } from '../lib/isServer';
-import { Test } from '@screens/Test';
+import { Todo } from '@screens/Todo';
 
 function renderBasePath() {
   const key = '@d_path';
@@ -28,7 +28,7 @@ const Routes = () => {
     <Router basename="/dashboard">
       <Switch>
         <Route path="/" exact render={renderBasePath} />
-        <Route path="/test" exact component={Test} />
+        <Route path="/todo" exact component={Todo} />
       </Switch>
     </Router>
   );

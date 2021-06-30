@@ -62,7 +62,8 @@ export const CreateTodoModal: React.FC<CreateTodoModalProps> = ({
 }) => {
   const queryClient = useQueryClient();
   const token = useTokenStore((s) => s.accessToken);
-  const handleSubmit = useDebounceCallback(
+
+  const handleCreate = useDebounceCallback(
     async (value: FormState, _: FormikHelpers<FormState>) => {
       const {
         name,
@@ -96,6 +97,45 @@ export const CreateTodoModal: React.FC<CreateTodoModalProps> = ({
     100,
     [token, queryClient, calendarUid]
   );
+
+  const handleUpdate = useDebounceCallback(
+    async (value: FormState, _: FormikHelpers<FormState>) => {
+      const {
+        name,
+        description,
+        expectedDuration: { mins, hours },
+      } = value;
+      if (!name || !description || isNaN(hours) || isNaN(mins)) return;
+      if (selectedEvent == null) return;
+
+      const updatedStore = {
+        name,
+        description,
+        expectedDuration: hoursToSeconds(hours) + minsToSeconds(mins),
+      };
+      try {
+        await axios({
+          method: 'PATCH',
+          baseURL: API_BASE_URL,
+          url: `/event/todo/${selectedEvent?.uuid}`,
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+          data: {
+            updatedStore,
+          },
+        });
+        queryClient.invalidateQueries(QUERY_KEYS.currentUser);
+        onClose();
+      } catch (err) {
+        throw new Error();
+      }
+    },
+    100,
+    [token, queryClient, selectedEvent]
+  );
+
+  const handleSubmit = selectedEvent ? handleUpdate : handleCreate;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} onOverlayClick={onClose}>

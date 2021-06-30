@@ -12,7 +12,7 @@ import { ConfirmModal } from '@components/Modal/ConfirmModal';
 import { CreateTodoModal } from '@components/Modal/CreateTodoModal';
 import { User } from '@types';
 
-export function Test() {
+export function Todo() {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData<User>(QUERY_KEYS.currentUser);
   const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null);
@@ -55,7 +55,6 @@ export function Test() {
   }, []);
 
   const handleConfirm = useCallback(async () => {
-    console.log(selectedTodoId);
     if (selectedTodoId == null) return;
     try {
       await eventDeleteMutate({ token, id: selectedTodoId });
@@ -87,6 +86,7 @@ export function Test() {
       <DroppableTodoMainSection
         queryClient={queryClient}
         todoList={todoList}
+        calendarUid={uuid}
         modalControllers={{
           onManipulateTodoModalOpen: handleManipulateTodoModalOpen,
           onConfirmModalOpen: handleConfirmModalOpen,

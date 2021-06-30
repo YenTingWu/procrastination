@@ -13,7 +13,10 @@ import { DeleteButton, CreateButton } from '@components/IconButton';
 import { reorderList } from './lib/reorderList';
 import type { QueryClient } from 'react-query';
 import { Event, EventStatus } from '@types';
-import { useTodoUpdateMutation } from '@globalStore/server/useTodoMutation';
+import {
+  useTodoModifyMutation,
+  useTodoUpdateMutation,
+} from '@globalStore/server/useTodoMutation';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
 
 interface DeleteModeContext {
@@ -24,8 +27,17 @@ export const DeleteModeContextStore = createContext<DeleteModeContext>(
   {} as DeleteModeContext
 );
 
+type UpdatableField = {
+  name: string;
+  description: string;
+  expectedDuration: number;
+  duration: number;
+  status: EventStatus;
+};
+
 type DragAndDropState = {
   [EventStatus.CREATED]: Array<Event>;
+  [EventStatus.PROCESSING]: Array<Event>;
   [EventStatus.WORKING]: Array<Event>;
   [EventStatus.COMPLETED]: Array<Event>;
 };
@@ -47,13 +59,27 @@ type DragAndDropAction =
   | {
       type: 'reset';
       payload: Array<Event>;
+    }
+  | {
+      type: 'setTargetList';
+      payload: Partial<DragAndDropState>;
+    }
+  | {
+      type: 'addSecondToWorkingTodo';
+      payload: string;
     };
+
+function getInitialList(status: EventStatus, todoList: Array<Event>) {
+  return todoList.filter((todo) => todo.status === status);
+}
 
 function getStatusList(
   status: EventStatus,
   state: DragAndDropState
 ): Array<Event> {
   if (status === EventStatus.CREATED) return [...state[EventStatus.CREATED]];
+  if (status === EventStatus.PROCESSING)
+    return [...state[EventStatus.PROCESSING]];
   if (status === EventStatus.WORKING) return [...state[EventStatus.WORKING]];
   if (status === EventStatus.COMPLETED)
     return [...state[EventStatus.COMPLETED]];
@@ -82,7 +108,8 @@ const dragAndDropControllerReducer: Reducer<
       }
       let fromList = getStatusList(fromId, state);
       let toList = getStatusList(toId, state);
-      const [removedItem] = fromList.splice(fromIndex, 1);
+      let [removedItem] = fromList.splice(fromIndex, 1);
+      removedItem.status = toId;
       toList.splice(toIndex, 0, removedItem);
 
       return {
@@ -95,15 +122,40 @@ const dragAndDropControllerReducer: Reducer<
       if (newList == null) return { ...state };
 
       return {
-        [EventStatus.CREATED]: newList.filter(
-          ({ status }) => status === EventStatus.CREATED
+        [EventStatus.CREATED]: getInitialList(EventStatus.CREATED, newList),
+        [EventStatus.PROCESSING]: getInitialList(
+          EventStatus.PROCESSING,
+          newList
         ),
-        [EventStatus.WORKING]: newList.filter(
-          ({ status }) => status === EventStatus.WORKING
-        ),
-        [EventStatus.COMPLETED]: newList.filter(
-          ({ status }) => status === EventStatus.COMPLETED
-        ),
+        [EventStatus.WORKING]: getInitialList(EventStatus.WORKING, newList),
+        [EventStatus.COMPLETED]: getInitialList(EventStatus.COMPLETED, newList),
+      };
+
+    case 'setTargetList':
+      const isInStatusEnum = Object.keys(action.payload).some(
+        (status) => status in [EventStatus]
+      );
+      if (!isInStatusEnum) throw new Error();
+
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case 'addSecondToWorkingTodo':
+      const workingList = getStatusList(EventStatus.WORKING, state);
+      const list = workingList.map((todo) => {
+        if (todo.uuid === action.payload) {
+          return {
+            ...todo,
+            duration: todo.duration + 1,
+          };
+        }
+        return todo;
+      });
+
+      return {
+        ...state,
+        [EventStatus.WORKING]: list,
       };
 
     // TODO:
@@ -131,6 +183,7 @@ interface DroppableTodoMainSectionProps {
   todoList: Array<Event>;
   queryClient: QueryClient;
   modalControllers: ModalController;
+  calendarUid: string;
 }
 
 /**
@@ -143,27 +196,27 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
   todoList,
   queryClient,
   modalControllers,
+  calendarUid,
 }) => {
-  const [isSwitchStatus, setSwitchStatus] = useState<boolean>(false);
+  const [isSwitchingStatus, setSwitchingStatus] = useState<boolean>(false);
   const [isDeleteMode, setDeleteMode] = useState<boolean>(false);
   const {
-    mutate: todoUpdateMutate,
-    isError: isTodoUpdateError,
-  } = useTodoUpdateMutation(queryClient);
+    mutate: todoModifyMutate,
+    isError: isTodoModifyError,
+  } = useTodoModifyMutation(queryClient);
+  const { mutate: todoUpdateMutate } = useTodoUpdateMutation(queryClient);
   const token = useTokenStore((s) => s.accessToken);
 
   const [droppableListState, droppableListDispatch] = useReducer(
     dragAndDropControllerReducer,
     {
-      [EventStatus.CREATED]: todoList.filter(
-        ({ status }) => status === EventStatus.CREATED
+      [EventStatus.CREATED]: getInitialList(EventStatus.CREATED, todoList),
+      [EventStatus.PROCESSING]: getInitialList(
+        EventStatus.PROCESSING,
+        todoList
       ),
-      [EventStatus.WORKING]: todoList.filter(
-        ({ status }) => status === EventStatus.WORKING
-      ),
-      [EventStatus.COMPLETED]: todoList.filter(
-        ({ status }) => status === EventStatus.COMPLETED
-      ),
+      [EventStatus.WORKING]: getInitialList(EventStatus.WORKING, todoList),
+      [EventStatus.COMPLETED]: getInitialList(EventStatus.COMPLETED, todoList),
     }
   );
 
@@ -176,14 +229,40 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
    */
 
   useEffect(() => {
-    if (!isSwitchStatus || isTodoUpdateError) {
+    if (!isSwitchingStatus || isTodoModifyError) {
       droppableListDispatch({
         type: 'reset',
         payload: todoList,
       });
     }
-    setSwitchStatus(false);
-  }, [todoList, isTodoUpdateError]);
+    setSwitchingStatus(false);
+  }, [todoList, isTodoModifyError]);
+
+  useEffect(() => {
+    window.onbeforeunload = confirmExit;
+    async function confirmExit() {
+      const updatedTodoList = Object.keys(EventStatus).reduce((acc, cur) => {
+        return acc.concat(droppableListState[cur as EventStatus]);
+      }, [] as Array<Event>);
+
+      await todoUpdateMutate({
+        data: { calendarUid, updatedTodoList },
+        token,
+      });
+
+      return 'confirmExit';
+    }
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [droppableListState]);
+
+  const toggleDeleteMode = useCallback(() => setDeleteMode((s) => !s), []);
+  const handleCountSecond = useCallback(
+    (uuid: string) =>
+      droppableListDispatch({ type: 'addSecondToWorkingTodo', payload: uuid }),
+    []
+  );
 
   const handleDragEnd = useCallback(
     async (result: DropResult) => {
@@ -197,17 +276,21 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
         fromStatus as EventStatus,
         droppableListState
       );
-      const { uuid } = fromList[fromIndex];
-      let updatedStore = {
+      const { uuid, duration } = fromList[fromIndex];
+      let updatedStore: Partial<UpdatableField> = {
         status: toStatus as EventStatus,
       };
 
+      if (fromStatus === EventStatus.WORKING) {
+        updatedStore.duration = duration;
+      }
+
       try {
-        await todoUpdateMutate({
+        await todoModifyMutate({
           todoInfo: { uid: uuid, updatedStore },
           token,
         });
-        setSwitchStatus(true);
+        setSwitchingStatus(true);
       } catch {}
 
       // Client Store
@@ -221,14 +304,12 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
         },
       });
     },
-    [droppableListDispatch, todoUpdateMutate, droppableListState]
+    [droppableListDispatch, todoModifyMutate, droppableListState]
   );
-
-  const toggleDeleteMode = useCallback(() => setDeleteMode((s) => !s), []);
 
   return (
     <DeleteModeContextStore.Provider value={{ isDeleteMode }}>
-      <Flex flex="1 1 0" alignItems="center">
+      <Flex flex="1 0 0" maxW="calc(100% - 3.5rem)" alignItems="center">
         <Flex
           flex="1"
           justifyContent="flex-end"
@@ -256,14 +337,15 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
             />
           </Flex>
         </Flex>
-        <Flex flex="12 1 0" pl="20">
+        <Flex flex="12 1 0" overflowX="scroll" pt="10" pb="10" pl="20" pr="10">
           <DragDropContext onDragEnd={handleDragEnd}>
-            <Grid templateColumns="repeat(3, 1fr)" gap={10}>
+            <Grid templateColumns="repeat(4, 1fr)" gap={10}>
               {Object.values(EventStatus).map((id) => (
                 <DroppableList
                   key={id}
                   list={droppableListState[id]}
                   droppableId={id}
+                  onCountSecond={handleCountSecond}
                   modalControllers={modalControllers}
                 />
               ))}

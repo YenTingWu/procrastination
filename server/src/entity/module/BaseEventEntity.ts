@@ -8,6 +8,7 @@ import {
 
 export enum Status {
   CREATED = 'CREATED',
+  PROCESSING = 'PROCESSING',
   WORKING = 'WORKING',
   COMPLETED = 'COMPLETED',
 }

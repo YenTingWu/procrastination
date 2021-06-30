@@ -1,6 +1,6 @@
 import create from 'zustand';
-import { State } from 'zustand';
 import { combine } from 'zustand/middleware';
+import type { State } from 'zustand';
 
 export type OpenedPicker = null | 'startTime' | 'endTime';
 

@@ -12,7 +12,7 @@ const createTodos = async (): Promise<Event[]> => {
   let list = [];
   const statusArr = Object.values(Status).map((v) => v);
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 4; i++) {
     let newTodo = await Event.create({
       name: `New Event original_${statusArr[i]}`,
       type: 'to_do',

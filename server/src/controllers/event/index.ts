@@ -3,4 +3,8 @@ export {
   postCreateNewEvent,
   putModifyEvent,
 } from './eventController';
-export { patchUpdateTodo, postCreateTodo } from './todoController';
+export {
+  patchModifyTodo,
+  postCreateTodo,
+  putUpdateTodo,
+} from './todoController';

@@ -10,6 +10,7 @@ export enum WEEKDAYS {
 
 export enum EventStatus {
   CREATED = 'CREATED',
+  PROCESSING = 'PROCESSING',
   WORKING = 'WORKING',
   COMPLETED = 'COMPLETED',
 }

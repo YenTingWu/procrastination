@@ -58,11 +58,9 @@ type UpdatableField = {
   status: Status;
 };
 
-export const patchUpdateTodo = async (req: Request, res: Response) => {
-  const {
-    uid,
-    updatedStore,
-  }: { uid: string; updatedStore: Partial<UpdatableField> } = req.body;
+export const patchModifyTodo = async (req: Request, res: Response) => {
+  const { uid } = req.params;
+  const { updatedStore }: { updatedStore: Partial<UpdatableField> } = req.body;
 
   if (!updatedStore || Object.keys(updatedStore).length === 0) {
     res.status(400).json({
@@ -72,12 +70,11 @@ export const patchUpdateTodo = async (req: Request, res: Response) => {
     throw new Error();
   }
   try {
-    const newList = await getRepository(Event)
+    await getRepository(Event)
       .createQueryBuilder('events')
       .where('events.uuid = :uid', { uid })
       .update({ ...updatedStore })
       .execute();
-    console.log(newList);
     res.status(201).json({
       ok: true,
       statusMessage: 'created',
@@ -88,4 +85,63 @@ export const patchUpdateTodo = async (req: Request, res: Response) => {
       statusMessage: 'bad request',
     });
   }
+};
+
+export const putUpdateTodo = async (req: Request, res: Response) => {
+  const {
+    calendarUid,
+    updatedTodoList,
+  }: {
+    calendarUid: string;
+    updatedTodoList: Event[];
+  } = req.body;
+
+  if (!calendarUid || !updatedTodoList) {
+    res.status(400).json({
+      ok: false,
+      statusMessage: 'bad request',
+    });
+    throw new Error();
+  }
+
+  let calendar;
+
+  try {
+    calendar = await getRepository(Calendar)
+      .createQueryBuilder('calendars')
+      .leftJoinAndSelect('calendars.events', 'events')
+      .where('calendars.uuid=:uid', { uid: calendarUid })
+      .getOne();
+  } catch {
+    res.status(404).json({
+      ok: false,
+      statusMessage: 'not found',
+    });
+  }
+
+  const newList: Event[] = calendar.events.map((e) => {
+    const { type, uuid } = e;
+    if (type === 'to_do') {
+      const todo = updatedTodoList.find((l) => l.uuid === uuid);
+      if (!todo) return e;
+      return {
+        ...e,
+        ...todo,
+      };
+    }
+    return e;
+  });
+
+  try {
+    await Event.save(newList);
+  } catch {
+    res.send(500).json({
+      ok: false,
+    });
+  }
+
+  res.status(200).json({
+    ok: true,
+    statusMessage: 'ok',
+  });
 };

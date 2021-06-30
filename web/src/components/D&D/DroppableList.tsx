@@ -1,14 +1,15 @@
-import React, { useMemo, useContext } from 'react';
-import { Flex, Heading, Text, Box } from '@chakra-ui/react';
+import React, { useMemo, useContext, useEffect } from 'react';
+import { Flex, Heading, Text, Box, useBreakpointValue } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
+import memorize from 'memoize-one';
 import { FixedSizeList, areEqual } from 'react-window';
 import { Droppable, Draggable, DraggableProvided } from 'react-beautiful-dnd';
 import hoursToSeconds from 'date-fns/fp/hoursToSeconds';
-import { Event } from '@types';
+import { Event, EventStatus } from '@types';
 import { getCombinedStyle } from './lib/getCombinedStyle';
 import ListStyle from './DroppableList.style.module.css';
 import { DeleteModeContextStore } from './DroppableTodoMainSection';
-import memorize from 'memoize-one';
+import { getTimeObject } from '@hooks/useTimeCounter';
 
 export type ModalController = {
   onManipulateTodoModalOpen: (uuid?: string) => void;
@@ -32,17 +33,17 @@ function formatSecond(sec: number) {
   return `${secondsForAnHour / 60} mins`;
 }
 
+function getTwoDigit(digit: number) {
+  return digit >= 10 ? `${digit}` : `0${digit}`;
+}
+
 interface VirtualListItemProps {
   provided: DraggableProvided;
-  info: {
-    name: string;
-    description: string;
-    expectedDuration: number;
-    uuid: string;
-  };
+  todo: Event;
   style: React.CSSProperties;
   isDragging: boolean;
   modalControllers: ModalController;
+  onCountSecond: (uuid: string) => void;
 }
 
 /**
@@ -54,11 +55,17 @@ interface VirtualListItemProps {
 const VirtualListItem = ({
   provided,
   style,
-  info: { name, description, expectedDuration, uuid },
+  todo: { expectedDuration, name, description, uuid, status, duration },
   isDragging,
   modalControllers: { onConfirmModalOpen, onManipulateTodoModalOpen },
+  onCountSecond,
 }: VirtualListItemProps) => {
   const { isDeleteMode } = useContext(DeleteModeContextStore);
+  const time = getTimeObject(duration);
+  const isWorkingStatus = useMemo(() => status === EventStatus.WORKING, [
+    status,
+  ]);
+
   const formattedExpectedDuration = useMemo(
     () => formatSecond(expectedDuration),
     [expectedDuration]
@@ -75,6 +82,13 @@ const VirtualListItem = ({
     e.preventDefault();
     onManipulateTodoModalOpen(uuid);
   };
+
+  useEffect(() => {
+    if (isWorkingStatus) {
+      const timer = setInterval(() => onCountSecond(uuid), 1000);
+      return () => clearInterval(timer);
+    }
+  }, []);
 
   return (
     <Flex
@@ -103,6 +117,17 @@ const VirtualListItem = ({
         <Flex mt=".1rem">
           <Text lineHeight="1.225" fontSize="x-small" color="blue.400">
             {formattedExpectedDuration}
+          </Text>
+          <Text
+            lineHeight="1.225"
+            ml="2"
+            fontSize="x-small"
+            fontWeight={isWorkingStatus ? 'extrabold' : 'base'}
+            color={isWorkingStatus ? 'red.500' : 'purple.400'}
+          >
+            {`${getTwoDigit(time.hours)}:${getTwoDigit(
+              time.mins
+            )}:${getTwoDigit(time.secs)}`}
           </Text>
         </Flex>
         <Text
@@ -135,6 +160,7 @@ const VirtualListItem = ({
 type DataType = {
   list: Event[];
   modalControllers: ModalController;
+  onCountSecond: (uuid: string) => void;
 };
 
 interface VirtualListRowProps {
@@ -151,27 +177,27 @@ interface VirtualListRowProps {
  */
 
 const VirtualListRow = React.memo(
-  ({ data: { list, modalControllers }, index, style }: VirtualListRowProps) => {
-    const { name, description, expectedDuration, uuid } = list[index];
+  ({
+    data: { list, modalControllers, onCountSecond },
+    index,
+    style,
+  }: VirtualListRowProps) => {
+    const todo = list[index];
 
     return (
       <Draggable
-        key={`${name}_${index}`}
-        draggableId={`${name}_${index}`}
+        key={`${todo.name}_${index}`}
+        draggableId={`${todo.name}_${index}`}
         index={index}
       >
         {(provided, snapshot) => (
           <VirtualListItem
-            info={{
-              name,
-              description,
-              expectedDuration,
-              uuid,
-            }}
+            todo={todo}
             style={style}
             provided={provided}
             isDragging={snapshot.isDragging}
             modalControllers={modalControllers}
+            onCountSecond={onCountSecond}
           />
         )}
       </Draggable>
@@ -194,9 +220,14 @@ const VirtualListRow = React.memo(
 // To avoid causing unnecessary re-renders pure Row components.
 
 const createItemData = memorize(
-  (list: Array<Event>, modalControllers: ModalController) => ({
+  (
+    list: Array<Event>,
+    modalControllers: ModalController,
+    onCountSecond: (uuid: string) => void
+  ) => ({
     list,
     modalControllers,
+    onCountSecond,
   })
 );
 
@@ -204,6 +235,7 @@ interface DroppableListProps {
   droppableId: string;
   list: Array<Event>;
   modalControllers: ModalController;
+  onCountSecond: (uuid: string) => void;
 }
 
 /**
@@ -216,18 +248,21 @@ export const DroppableList: React.FC<DroppableListProps> = ({
   droppableId,
   list,
   modalControllers,
+  onCountSecond,
 }) => {
-  const itemData = createItemData(list, modalControllers);
-
+  const itemData = createItemData(list, modalControllers, onCountSecond);
+  const height = useBreakpointValue({ base: 250, xl: 400 });
   return (
     <Droppable
       droppableId={droppableId}
-      type="PERSON"
+      type="STATUS"
       mode="virtual"
       renderClone={(provided, _snapshot, rubric) => {
-        const { name, description, expectedDuration } = list[
+        const { name, description, expectedDuration, duration } = list[
           rubric.source.index
         ];
+        const time = getTimeObject(duration);
+
         const formattedExpectedDuration = useMemo(
           () => formatSecond(expectedDuration),
           [expectedDuration]
@@ -251,6 +286,16 @@ export const DroppableList: React.FC<DroppableListProps> = ({
             <Flex mt=".1rem">
               <Text lineHeight="1.225" fontSize="x-small" color="blue.500">
                 {formattedExpectedDuration}
+              </Text>
+              <Text
+                lineHeight="1.225"
+                ml="2"
+                fontSize="x-small"
+                color="purple.400"
+              >
+                {`${getTwoDigit(time.hours)}:${getTwoDigit(
+                  time.mins
+                )}:${getTwoDigit(time.secs)}`}
               </Text>
             </Flex>
             <Text
@@ -289,7 +334,7 @@ export const DroppableList: React.FC<DroppableListProps> = ({
             bg={snapshot.isDraggingOver ? 'purple.50' : 'white'}
           >
             <FixedSizeList
-              height={400}
+              height={height || 250}
               width={300}
               className={ListStyle['task-left']}
               itemCount={list.length}

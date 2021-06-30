@@ -55,7 +55,7 @@ export const NavigationSideBar: React.FC<NavigationSideBarProps> = ({
       <Divider w="80%" />
 
       <Flex flex="1">
-        <Button onClick={() => history.push('/test')}>test</Button>
+        <Button onClick={() => history.push('/todo')}>todo</Button>
       </Flex>
       <Divider w="80%" />
 

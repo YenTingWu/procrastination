@@ -8,7 +8,7 @@ function fetchDeleteData(uuid: string, token: string) {
   return axios({
     method: 'DELETE',
     baseURL: API_BASE_URL,
-    url: `/event/${uuid}`,
+    url: `/event/e/${uuid}`,
     headers: {
       authorization: `Bearer ${token}`,
     },

@@ -74,7 +74,7 @@ export const ManipulateEventModal: React.FC<ManipulateEventModalProps> = ({
         await axios({
           method: 'POST',
           baseURL: API_BASE_URL,
-          url: '/event',
+          url: '/event/e',
           headers: {
             authorization: `Bearer ${token}`,
           },
@@ -112,7 +112,7 @@ export const ManipulateEventModal: React.FC<ManipulateEventModalProps> = ({
         axios({
           method: 'PUT',
           baseURL: API_BASE_URL,
-          url: `/event/${selectedEvent?.uuid || ''}`,
+          url: `/event/e/${selectedEvent?.uuid || ''}`,
           headers: {
             authorization: `Bearer ${token}`,
           },
