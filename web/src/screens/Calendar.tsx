@@ -140,10 +140,7 @@ export const Calendar: React.FC<CalendarProps> = ({}) => {
 
   return (
     <AppDefaultLayoutDesktop>
-      <NavigationSideBar
-        avatar={avatar || 'https://bit.ly/broken-link'}
-        placeholder={displayName || ''}
-      />
+      <NavigationSideBar avatar={avatar} placeholder={displayName} />
       <DailyScheduleShowcase
         onDeleteButtonClick={handleConfirmModalOpen}
         onSelectEvent={handleEventModalOpen}

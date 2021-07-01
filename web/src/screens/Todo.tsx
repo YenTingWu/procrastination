@@ -18,9 +18,9 @@ export function Todo() {
   const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null);
   const token = useTokenStore((s) => s.accessToken);
   const {
-    isOpen: isConfirmModalOpen,
-    onClose: onConfirmModalClose,
-    onOpen: onConfirmModalOpen,
+    isOpen: isDeleteConfirmModalOpen,
+    onClose: onDeleteConfirmModalClose,
+    onOpen: onDeleteConfirmModalOpen,
   } = useDisclosure();
 
   const {
@@ -34,24 +34,15 @@ export function Todo() {
     mutate: eventDeleteMutate,
   } = useEventDeleteMutation(queryClient);
 
-  const handleConfirmModalOpen = useCallback((id: string) => {
+  // Delete Confirm Modal
+  const handleDeleteConfirmModalOpen = useCallback((id: string) => {
     setSelectedTodoId(id);
-    onConfirmModalOpen();
+    onDeleteConfirmModalOpen();
   }, []);
 
-  const handleConfirmModalClose = useCallback(() => {
+  const handleDeleteConfirmModalClose = useCallback(() => {
     setSelectedTodoId(null);
-    onConfirmModalClose();
-  }, []);
-
-  const handleManipulateTodoModalOpen = useCallback((uuid?: string) => {
-    if (uuid) setSelectedTodoId(uuid);
-    onManipulateTodoModalOpen();
-  }, []);
-
-  const handleManipulateTodoModalClose = useCallback(() => {
-    onManipulateTodoModalClose();
-    setSelectedTodoId(null);
+    onDeleteConfirmModalClose();
   }, []);
 
   const handleConfirm = useCallback(async () => {
@@ -61,8 +52,19 @@ export function Todo() {
     } catch (err) {
       console.log(err);
     }
-    handleConfirmModalClose();
+    handleDeleteConfirmModalClose();
   }, [selectedTodoId, token, eventDeleteMutate]);
+
+  // Manipulate Todo Modal
+  const handleManipulateTodoModalOpen = useCallback((uuid?: string) => {
+    if (uuid) setSelectedTodoId(uuid);
+    onManipulateTodoModalOpen();
+  }, []);
+
+  const handleManipulateTodoModalClose = useCallback(() => {
+    onManipulateTodoModalClose();
+    setSelectedTodoId(null);
+  }, []);
 
   if (!user) {
     return <LoadingUI />;
@@ -82,23 +84,24 @@ export function Todo() {
 
   return (
     <AppDefaultLayoutDesktop>
-      <NavigationSideBar avatar={avatar || ''} placeholder={displayName} />
+      <NavigationSideBar avatar={avatar} placeholder={displayName} />
       <DroppableTodoMainSection
         queryClient={queryClient}
         todoList={todoList}
         calendarUid={uuid}
         modalControllers={{
           onManipulateTodoModalOpen: handleManipulateTodoModalOpen,
-          onConfirmModalOpen: handleConfirmModalOpen,
+          onDeleteConfirmModalOpen: handleDeleteConfirmModalOpen,
         }}
       />
       <ConfirmModal
-        isOpen={isConfirmModalOpen}
-        onClose={handleConfirmModalClose}
+        isOpen={isDeleteConfirmModalOpen}
+        onClose={handleDeleteConfirmModalClose}
         onConfirm={handleConfirm}
         isLoading={isDeletingEventLoading}
         content={'Would you like to delete the event?'}
       />
+
       <CreateTodoModal
         isOpen={isManipulateTodoModalOpen}
         onClose={handleManipulateTodoModalClose}

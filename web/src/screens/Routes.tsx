@@ -5,9 +5,10 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import { Calendar } from './Calendar';
-import { isServer } from '../lib/isServer';
+import { isServer } from '@lib/isServer';
+import { Calendar } from '@screens/Calendar';
 import { Todo } from '@screens/Todo';
+import { Profile } from '@screens/Profile';
 
 function renderBasePath() {
   const key = '@d_path';
@@ -29,6 +30,7 @@ const Routes = () => {
       <Switch>
         <Route path="/" exact render={renderBasePath} />
         <Route path="/todo" exact component={Todo} />
+        <Route path="/profile" exact component={Profile} />
       </Switch>
     </Router>
   );

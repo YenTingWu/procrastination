@@ -22,8 +22,8 @@ const SideBarItemContainer: React.FC = ({ children }) => {
 };
 
 interface NavigationSideBarProps {
-  avatar: string;
-  placeholder: string;
+  avatar?: string;
+  placeholder?: string;
 }
 
 /**
@@ -32,12 +32,16 @@ interface NavigationSideBarProps {
  */
 
 export const NavigationSideBar: React.FC<NavigationSideBarProps> = ({
-  avatar,
-  placeholder,
+  avatar = 'https://bit.ly/broken-link',
+  placeholder = '',
 }) => {
   let history = useHistory();
 
   const handleLogoIconClick = useCallback(() => history.push('/'), []);
+
+  const handleNavigateTodo = useCallback(() => history.push('/todo'), []);
+
+  const handleNavigateProfile = useCallback(() => history.push('/profile'), []);
 
   return (
     <Flex
@@ -55,11 +59,19 @@ export const NavigationSideBar: React.FC<NavigationSideBarProps> = ({
       <Divider w="80%" />
 
       <Flex flex="1">
-        <Button onClick={() => history.push('/todo')}>todo</Button>
+        <Button onClick={handleNavigateTodo}>todo</Button>
       </Flex>
       <Divider w="80%" />
 
-      <Flex flexDirection="column" alignItems="center" pt="3">
+      <Flex
+        flexDirection="column"
+        alignItems="center"
+        pt="3"
+        onClick={handleNavigateProfile}
+        _hover={{
+          cursor: 'pointer',
+        }}
+      >
         <Avatar name={placeholder} src={avatar} />
       </Flex>
     </Flex>

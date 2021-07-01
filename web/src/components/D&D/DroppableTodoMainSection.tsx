@@ -19,13 +19,12 @@ import {
 } from '@globalStore/server/useTodoMutation';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
 
-interface DeleteModeContext {
-  isDeleteMode: boolean;
+type ScreenMode = 'delete' | 'duplicate' | 'base';
+interface ModeContext {
+  screenMode: ScreenMode;
 }
 
-export const DeleteModeContextStore = createContext<DeleteModeContext>(
-  {} as DeleteModeContext
-);
+export const ModeContextStore = createContext<ModeContext>({} as ModeContext);
 
 type UpdatableField = {
   name: string;
@@ -199,7 +198,7 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
   calendarUid,
 }) => {
   const [isSwitchingStatus, setSwitchingStatus] = useState<boolean>(false);
-  const [isDeleteMode, setDeleteMode] = useState<boolean>(false);
+  const [screenMode, setScreenMode] = useState<ScreenMode>('base');
   const {
     mutate: todoModifyMutate,
     isError: isTodoModifyError,
@@ -257,7 +256,15 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
     };
   }, [droppableListState]);
 
-  const toggleDeleteMode = useCallback(() => setDeleteMode((s) => !s), []);
+  //  const toggleDeleteMode = useCallback(() => setDeleteMode((s) => !s), []);
+
+  const toggleDeleteMode = useCallback(() => {
+    setScreenMode((mode) => {
+      if (mode === 'delete') return 'base';
+      return 'delete';
+    });
+  }, []);
+
   const handleCountSecond = useCallback(
     (uuid: string) =>
       droppableListDispatch({ type: 'addSecondToWorkingTodo', payload: uuid }),
@@ -308,7 +315,7 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
   );
 
   return (
-    <DeleteModeContextStore.Provider value={{ isDeleteMode }}>
+    <ModeContextStore.Provider value={{ screenMode }}>
       <Flex flex="1 0 0" maxW="calc(100% - 3.5rem)" alignItems="center">
         <Flex
           flex="1"
@@ -331,7 +338,7 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
               style={{ size: 'md' }}
             />
             <DeleteButton
-              isDeleteMode={isDeleteMode}
+              isDeleteMode={screenMode === 'delete'}
               onClick={toggleDeleteMode}
               style={{ size: 'md', mt: '4' }}
             />
@@ -353,7 +360,7 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
           </DragDropContext>
         </Flex>
       </Flex>
-    </DeleteModeContextStore.Provider>
+    </ModeContextStore.Provider>
   );
 };
 

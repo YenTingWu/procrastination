@@ -37,7 +37,7 @@ export const useInitialCurrentUser = () => {
       try {
         const { data } = await fetchData(accessToken);
         return data;
-      } catch (err: any) {
+      } catch (err) {
         /**
          * If the error is Unauthenticated,
          * try to re-grant accessToken by revoking refreshToken

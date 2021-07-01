@@ -8,12 +8,12 @@ import hoursToSeconds from 'date-fns/fp/hoursToSeconds';
 import { Event, EventStatus } from '@types';
 import { getCombinedStyle } from './lib/getCombinedStyle';
 import ListStyle from './DroppableList.style.module.css';
-import { DeleteModeContextStore } from './DroppableTodoMainSection';
+import { ModeContextStore } from './DroppableTodoMainSection';
 import { getTimeObject } from '@hooks/useTimeCounter';
 
 export type ModalController = {
   onManipulateTodoModalOpen: (uuid?: string) => void;
-  onConfirmModalOpen: (id: string) => void;
+  onDeleteConfirmModalOpen: (id: string) => void;
 };
 
 /**
@@ -57,10 +57,10 @@ const VirtualListItem = ({
   style,
   todo: { expectedDuration, name, description, uuid, status, duration },
   isDragging,
-  modalControllers: { onConfirmModalOpen, onManipulateTodoModalOpen },
+  modalControllers: { onDeleteConfirmModalOpen, onManipulateTodoModalOpen },
   onCountSecond,
 }: VirtualListItemProps) => {
-  const { isDeleteMode } = useContext(DeleteModeContextStore);
+  const { screenMode } = useContext(ModeContextStore);
   const time = getTimeObject(duration);
   const isWorkingStatus = useMemo(() => status === EventStatus.WORKING, [
     status,
@@ -73,7 +73,7 @@ const VirtualListItem = ({
 
   const handleConfirmModalOpen = (e: React.MouseEvent<HTMLOrSVGElement>) => {
     e.preventDefault();
-    onConfirmModalOpen(uuid);
+    onDeleteConfirmModalOpen(uuid);
   };
 
   const handleManipulateTodoModalOpen = (
@@ -99,7 +99,9 @@ const VirtualListItem = ({
       _hover={{
         cursor: 'pointer',
       }}
-      onClick={isDeleteMode ? () => {} : handleManipulateTodoModalOpen}
+      onClick={
+        screenMode === 'delete' ? () => {} : handleManipulateTodoModalOpen
+      }
     >
       <Box
         flex="8 1 0"
@@ -120,10 +122,13 @@ const VirtualListItem = ({
           </Text>
           <Text
             lineHeight="1.225"
-            ml="2"
+            ml={2}
             fontSize="x-small"
             fontWeight={isWorkingStatus ? 'extrabold' : 'base'}
-            color={isWorkingStatus ? 'red.500' : 'purple.400'}
+            color={isWorkingStatus ? 'white' : 'purple.400'}
+            bg={isWorkingStatus ? 'gray.500' : 'white'}
+            pl={isWorkingStatus ? 1 : 0}
+            pr={isWorkingStatus ? 1 : 0}
           >
             {`${getTwoDigit(time.hours)}:${getTwoDigit(
               time.mins
@@ -140,7 +145,7 @@ const VirtualListItem = ({
           {description}
         </Text>
       </Box>
-      {isDeleteMode && (
+      {screenMode === 'delete' && (
         <Flex
           flex="1 0 0"
           maxW="10%"

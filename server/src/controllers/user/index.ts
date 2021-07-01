@@ -99,3 +99,34 @@ export const getUserData = async (_: Request, res: Response) => {
 
   res.json(user);
 };
+
+export const patchUpdateUser = async (req: Request, res: Response) => {
+  const { userUid } = req.params;
+  const { updatedStore } = req.body;
+
+  console.log(userUid, updatedStore);
+  if (!userUid || updatedStore == null) {
+    res.status(400).json({
+      ok: false,
+      statusMessage: 'bad request',
+    });
+  }
+
+  try {
+    await getRepository(User)
+      .createQueryBuilder('users')
+      .update({ ...updatedStore })
+      .where('users.uuid=:uid', { uid: userUid })
+      .execute();
+  } catch {
+    res.status(404).json({
+      ok: false,
+      statusMessage: 'not found',
+    });
+  }
+
+  res.status(201).json({
+    ok: true,
+    statusMessage: 'created',
+  });
+};
