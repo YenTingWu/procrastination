@@ -219,44 +219,16 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
     }
   );
 
-  /**
-   * If the todoList mutation is caused by switching item's status,
-   * client side is not going to reset data.
-   *
-   * The reason is because I would like to control the UI with the reducer state
-   * instead of the server data
-   */
+  async function updateTodo() {
+    const updatedTodoList = Object.keys(EventStatus).reduce((acc, cur) => {
+      return acc.concat(droppableListState[cur as EventStatus]);
+    }, [] as Array<Event>);
 
-  useEffect(() => {
-    if (!isSwitchingStatus || isTodoModifyError) {
-      droppableListDispatch({
-        type: 'reset',
-        payload: todoList,
-      });
-    }
-    setSwitchingStatus(false);
-  }, [todoList, isTodoModifyError]);
-
-  useEffect(() => {
-    window.onbeforeunload = confirmExit;
-    async function confirmExit() {
-      const updatedTodoList = Object.keys(EventStatus).reduce((acc, cur) => {
-        return acc.concat(droppableListState[cur as EventStatus]);
-      }, [] as Array<Event>);
-
-      await todoUpdateMutate({
-        data: { calendarUid, updatedTodoList },
-        token,
-      });
-
-      return 'confirmExit';
-    }
-    return () => {
-      window.onbeforeunload = null;
-    };
-  }, [droppableListState]);
-
-  //  const toggleDeleteMode = useCallback(() => setDeleteMode((s) => !s), []);
+    await todoUpdateMutate({
+      data: { calendarUid, updatedTodoList },
+      token,
+    });
+  }
 
   const toggleDeleteMode = useCallback(() => {
     setScreenMode((mode) => {
@@ -313,6 +285,37 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
     },
     [droppableListDispatch, todoModifyMutate, droppableListState]
   );
+
+  /**
+   * If the todoList mutation is caused by switching item's status,
+   * client side is not going to reset data.
+   *
+   * The reason is because I would like to control the UI with the reducer state
+   * instead of the server data
+   */
+
+  useEffect(() => {
+    if (!isSwitchingStatus || isTodoModifyError) {
+      droppableListDispatch({
+        type: 'reset',
+        payload: todoList,
+      });
+    }
+    setSwitchingStatus(false);
+  }, [todoList, isTodoModifyError]);
+
+  useEffect(() => {
+    window.onbeforeunload = confirmExit;
+
+    async function confirmExit() {
+      await updateTodo();
+      return 'confirmExit';
+    }
+
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [droppableListState]);
 
   return (
     <ModeContextStore.Provider value={{ screenMode }}>

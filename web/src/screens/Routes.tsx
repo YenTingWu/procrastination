@@ -9,6 +9,7 @@ import { isServer } from '@lib/isServer';
 import { Calendar } from '@screens/Calendar';
 import { Todo } from '@screens/Todo';
 import { Profile } from '@screens/Profile';
+import { Analysis } from '@screens/Analysis';
 
 function renderBasePath() {
   const key = '@d_path';
@@ -31,6 +32,7 @@ const Routes = () => {
         <Route path="/" exact render={renderBasePath} />
         <Route path="/todo" exact component={Todo} />
         <Route path="/profile" exact component={Profile} />
+        <Route path="/analysis" component={Analysis} />
       </Switch>
     </Router>
   );

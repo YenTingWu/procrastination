@@ -38,10 +38,12 @@ export const NavigationSideBar: React.FC<NavigationSideBarProps> = ({
   let history = useHistory();
 
   const handleLogoIconClick = useCallback(() => history.push('/'), []);
-
   const handleNavigateTodo = useCallback(() => history.push('/todo'), []);
-
   const handleNavigateProfile = useCallback(() => history.push('/profile'), []);
+  const handleNavigateAnalysis = useCallback(
+    () => history.push('/analysis'),
+    []
+  );
 
   return (
     <Flex
@@ -58,8 +60,11 @@ export const NavigationSideBar: React.FC<NavigationSideBarProps> = ({
       </SideBarItemContainer>
       <Divider w="80%" />
 
-      <Flex flex="1">
+      <Flex flex="1" pt="5" flexDirection="column">
         <Button onClick={handleNavigateTodo}>todo</Button>
+        <Button mt="3" onClick={handleNavigateAnalysis}>
+          analysis
+        </Button>
       </Flex>
       <Divider w="80%" />
 

@@ -1,165 +1,18 @@
-import React, { useMemo, useContext, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Flex, Heading, Text, Box, useBreakpointValue } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
 import memorize from 'memoize-one';
 import { FixedSizeList, areEqual } from 'react-window';
-import { Droppable, Draggable, DraggableProvided } from 'react-beautiful-dnd';
-import hoursToSeconds from 'date-fns/fp/hoursToSeconds';
-import { Event, EventStatus } from '@types';
-import { getCombinedStyle } from './lib/getCombinedStyle';
-import ListStyle from './DroppableList.style.module.css';
-import { ModeContextStore } from './DroppableTodoMainSection';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
+import { Event } from '@types';
+import ListStyle from '@components/D&D/DroppableList.style.module.css';
+import { DroppableVirtualizedListItem } from '@components/D&D/DroppableVirtualizedListItem';
 import { getTimeObject } from '@hooks/useTimeCounter';
+import { replaceSecWithFormattedHoursAndMins } from './lib/replaceSecWithFormattedHoursAndMins';
+import { getTwoDigit } from './lib/getTwoDigit';
 
 export type ModalController = {
   onManipulateTodoModalOpen: (uuid?: string) => void;
   onDeleteConfirmModalOpen: (id: string) => void;
-};
-
-/**
- * ## formatSecond
- * @param sec
- * @returns string
- */
-
-function formatSecond(sec: number) {
-  const secondsForAnHour = hoursToSeconds(1);
-  const isInt = (n: number) => n % 1 === 0;
-
-  if (sec >= secondsForAnHour) {
-    const hours = sec / secondsForAnHour;
-    return isInt(hours) ? `${hours} hrs` : `${hours.toFixed(2)} hrs`;
-  }
-  return `${secondsForAnHour / 60} mins`;
-}
-
-function getTwoDigit(digit: number) {
-  return digit >= 10 ? `${digit}` : `0${digit}`;
-}
-
-interface VirtualListItemProps {
-  provided: DraggableProvided;
-  todo: Event;
-  style: React.CSSProperties;
-  isDragging: boolean;
-  modalControllers: ModalController;
-  onCountSecond: (uuid: string) => void;
-}
-
-/**
- * ## Item
- * @param props {{{ provided, name, style, isDragging }
- * @returns JSX.Element
- */
-
-const VirtualListItem = ({
-  provided,
-  style,
-  todo: { expectedDuration, name, description, uuid, status, duration },
-  isDragging,
-  modalControllers: { onDeleteConfirmModalOpen, onManipulateTodoModalOpen },
-  onCountSecond,
-}: VirtualListItemProps) => {
-  const { screenMode } = useContext(ModeContextStore);
-  const time = getTimeObject(duration);
-  const isWorkingStatus = useMemo(() => status === EventStatus.WORKING, [
-    status,
-  ]);
-
-  const formattedExpectedDuration = useMemo(
-    () => formatSecond(expectedDuration),
-    [expectedDuration]
-  );
-
-  const handleConfirmModalOpen = (e: React.MouseEvent<HTMLOrSVGElement>) => {
-    e.preventDefault();
-    onDeleteConfirmModalOpen(uuid);
-  };
-
-  const handleManipulateTodoModalOpen = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
-    e.preventDefault();
-    onManipulateTodoModalOpen(uuid);
-  };
-
-  useEffect(() => {
-    if (isWorkingStatus) {
-      const timer = setInterval(() => onCountSecond(uuid), 1000);
-      return () => clearInterval(timer);
-    }
-  }, []);
-
-  return (
-    <Flex
-      ref={provided.innerRef}
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
-      style={getCombinedStyle({ provided, style, isDragging })}
-      _hover={{
-        cursor: 'pointer',
-      }}
-      onClick={
-        screenMode === 'delete' ? () => {} : handleManipulateTodoModalOpen
-      }
-    >
-      <Box
-        flex="8 1 0"
-        sx={{
-          '*::selection': {
-            bg: 'none',
-          },
-        }}
-      >
-        <Flex>
-          <Heading as="h6" noOfLines={1} fontSize="sm">
-            {name}
-          </Heading>
-        </Flex>
-        <Flex mt=".1rem">
-          <Text lineHeight="1.225" fontSize="x-small" color="blue.400">
-            {formattedExpectedDuration}
-          </Text>
-          <Text
-            lineHeight="1.225"
-            ml={2}
-            fontSize="x-small"
-            fontWeight={isWorkingStatus ? 'extrabold' : 'base'}
-            color={isWorkingStatus ? 'white' : 'purple.400'}
-            bg={isWorkingStatus ? 'gray.500' : 'white'}
-            pl={isWorkingStatus ? 1 : 0}
-            pr={isWorkingStatus ? 1 : 0}
-          >
-            {`${getTwoDigit(time.hours)}:${getTwoDigit(
-              time.mins
-            )}:${getTwoDigit(time.secs)}`}
-          </Text>
-        </Flex>
-        <Text
-          mt=".1rem"
-          color="gray.500"
-          lineHeight="1.225"
-          noOfLines={[1, 2]}
-          fontSize="x-small"
-        >
-          {description}
-        </Text>
-      </Box>
-      {screenMode === 'delete' && (
-        <Flex
-          flex="1 0 0"
-          maxW="10%"
-          justifyContent="center"
-          alignItems="center"
-          _hover={{
-            cursor: 'pointer',
-          }}
-        >
-          <DeleteIcon color="red.500" onClick={handleConfirmModalOpen} />
-        </Flex>
-      )}
-    </Flex>
-  );
 };
 
 type DataType = {
@@ -173,6 +26,21 @@ interface VirtualListRowProps {
   index: number;
   style: React.CSSProperties;
 }
+
+// This helper function memoizes incoming props,
+// To avoid causing unnecessary re-renders pure Row components.
+
+const createItemData = memorize(
+  (
+    list: Array<Event>,
+    modalControllers: ModalController,
+    onCountSecond: (uuid: string) => void
+  ) => ({
+    list,
+    modalControllers,
+    onCountSecond,
+  })
+);
 
 /**
  * ## VirtualListRow
@@ -196,7 +64,7 @@ const VirtualListRow = React.memo(
         index={index}
       >
         {(provided, snapshot) => (
-          <VirtualListItem
+          <DroppableVirtualizedListItem
             todo={todo}
             style={style}
             provided={provided}
@@ -220,21 +88,6 @@ const VirtualListRow = React.memo(
  #     # #    # # #   ##    #     # #    # #    # #      #    # #   ## #      #   ##   #
  #     # #    # # #    #     #####   ####  #    # #       ####  #    # ###### #    #   #
 */
-
-// This helper function memoizes incoming props,
-// To avoid causing unnecessary re-renders pure Row components.
-
-const createItemData = memorize(
-  (
-    list: Array<Event>,
-    modalControllers: ModalController,
-    onCountSecond: (uuid: string) => void
-  ) => ({
-    list,
-    modalControllers,
-    onCountSecond,
-  })
-);
 
 interface DroppableListProps {
   droppableId: string;
@@ -269,7 +122,7 @@ export const DroppableList: React.FC<DroppableListProps> = ({
         const time = getTimeObject(duration);
 
         const formattedExpectedDuration = useMemo(
-          () => formatSecond(expectedDuration),
+          () => replaceSecWithFormattedHoursAndMins(expectedDuration),
           [expectedDuration]
         );
         return (
