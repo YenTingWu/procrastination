@@ -9,18 +9,20 @@ interface Params {
 }
 
 export function getTimeObject(time: number) {
-  if (time < 60) return { hours: 0, mins: 0, secs: time };
-  if (time < 60 * 60)
+  const minToSeconds = 60;
+  const hourToSeconds = hoursToSeconds(1);
+
+  if (time < minToSeconds) return { hours: 0, mins: 0, secs: time };
+  if (time < hourToSeconds)
     return {
       hours: 0,
       mins: Math.floor(time / 60),
       secs: time % 60,
     };
 
-  const anHoursToSeconds = hoursToSeconds(1);
-  const hours = Math.floor(time / anHoursToSeconds);
+  const hours = Math.floor(time / hourToSeconds);
   const mins = Math.floor((time - hoursToSeconds(hours)) / 60);
-  const secs = time % anHoursToSeconds;
+  const secs = (time % hourToSeconds) % minToSeconds;
 
   return {
     hours,

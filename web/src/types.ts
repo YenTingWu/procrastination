@@ -54,6 +54,7 @@ export type Event = {
   type: 'to_do' | 'event';
   parents?: string[];
   children?: string[];
+  timestamp: (string | Date)[];
 };
 
 export type Schedule = {

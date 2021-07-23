@@ -11,6 +11,7 @@ import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { DroppableList, ModalController } from '@components/D&D/DroppableList';
 import { DeleteButton, CreateButton } from '@components/IconButton';
 import { reorderList } from './lib/reorderList';
+import { getNewTimeStamp } from './lib/getNewTimestamp';
 import type { QueryClient } from 'react-query';
 import { Event, EventStatus } from '@types';
 import {
@@ -32,6 +33,7 @@ type UpdatableField = {
   expectedDuration: number;
   duration: number;
   status: EventStatus;
+  timestamp: (Date | string)[];
 };
 
 type DragAndDropState = {
@@ -108,6 +110,7 @@ const dragAndDropControllerReducer: Reducer<
       let fromList = getStatusList(fromId, state);
       let toList = getStatusList(toId, state);
       let [removedItem] = fromList.splice(fromIndex, 1);
+      removedItem.timestamp = getNewTimeStamp(removedItem.timestamp, toId);
       removedItem.status = toId;
       toList.splice(toIndex, 0, removedItem);
 
@@ -255,9 +258,13 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
         fromStatus as EventStatus,
         droppableListState
       );
-      const { uuid, duration } = fromList[fromIndex];
+      const { uuid, duration, timestamp } = fromList[fromIndex];
+
+      //const timestamp
+
       let updatedStore: Partial<UpdatableField> = {
         status: toStatus as EventStatus,
+        timestamp: getNewTimeStamp(timestamp, toStatus as EventStatus),
       };
 
       if (fromStatus === EventStatus.WORKING) {

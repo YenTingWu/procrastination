@@ -16,6 +16,9 @@ export class Event extends BaseEventEntity {
   @Column({ type: 'timestamp with time zone', nullable: true })
   endTime: Date;
 
+  @Column({ type: 'timestamp with time zone', array: true, default: [] })
+  timestamp: Date[];
+
   @ManyToOne(() => Calendar, (calendar) => calendar.events, { cascade: true })
   calendar: Calendar;
 

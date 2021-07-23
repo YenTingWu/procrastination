@@ -18,10 +18,22 @@ export type DomainType = [number, number] | [Date, Date];
 const DEFAULT_DATE_DOMAIN: DomainType = [new Date(), new Date(2021, 7, 6)];
 const INPUT_EXCEED_RATE = 1.037;
 
+function getAppropriateWidth(width: number | string) {
+  const testPercentReg = /^[0-9]+%$/;
+  const testPxReg = /^[0-9]+px$/;
+  if (typeof width === 'number') return width;
+  if (testPercentReg.test(width))
+    return `calc(${width} / ${INPUT_EXCEED_RATE})`;
+  if (testPxReg.test(width)) return width;
+
+  return `${width}px`;
+}
+
 interface BidirectionalSliderProps {
-  domain?: [number, number];
+  domain?: DomainType;
   width?: string | number;
   onChange?: Function;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -32,8 +44,9 @@ interface BidirectionalSliderProps {
 
 export const BidirectionalSlider: React.FC<BidirectionalSliderProps> = ({
   domain = DEFAULT_DATE_DOMAIN,
-  onChange = console.log,
+  onChange,
   width = '70%',
+  style = {},
 }) => {
   /**
    * Translate domain into indices and values so that
@@ -43,8 +56,8 @@ export const BidirectionalSlider: React.FC<BidirectionalSliderProps> = ({
    * to pass not only "number" type but "Date" type array as domain props
    *
    */
-  const indicesOfDomain = useMemo(() => getIndices(domain), [domain]);
-  const valuesOfDomain = useMemo(() => getValues(domain), [domain]);
+  const indicesOfDomain = useMemo(() => getIndices(domain), []);
+  const valuesOfDomain = useMemo(() => getValues(domain), []);
   const [min, max] = indicesOfDomain;
 
   /**
@@ -92,15 +105,17 @@ export const BidirectionalSlider: React.FC<BidirectionalSliderProps> = ({
 
   // Get min and max values when their state changes
   useEffect(() => {
-    onChange({ min: valuesOfDomain[minVal], max: valuesOfDomain[maxVal] });
+    onChange &&
+      onChange([valuesOfDomain[minVal], valuesOfDomain[maxVal]] as DomainType);
   }, [biDirSliderDomain, onChange]);
 
-  const newInputWidth = width
-    ? { width: `calc(${width} / ${INPUT_EXCEED_RATE})` }
-    : {};
+  const newInputWidth = width ? { width: getAppropriateWidth(width) } : {};
 
   return (
-    <div className={styleModule.container} style={width ? { width } : {}}>
+    <div
+      className={styleModule.container}
+      style={width ? { ...style, ...newInputWidth } : {}}
+    >
       <input
         type="range"
         min={min}
