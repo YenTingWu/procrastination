@@ -1,6 +1,9 @@
 import { MonthlyCalendarDateInfoType } from '@types';
 import lastDayOfMonthFn from 'date-fns/fp/lastDayOfMonth';
 
+// Year is new Date().getYear() format
+// Month is new Date().getMonth() format
+
 export const getThisMonthDateInfo = ({
   year,
   month,

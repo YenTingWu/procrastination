@@ -13,6 +13,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "types": ["@types/jest"],
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
@@ -21,7 +22,8 @@
       "@hooks/*": ["src/hooks/*"],
       "@globalStore/*": ["src/globalStore/*"],
       "@lib/*": ["src/lib/*"],
-      "@types": ["src/types"]
+      "@types": ["src/types"],
+      "~test-utils": ["./test-utils"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
