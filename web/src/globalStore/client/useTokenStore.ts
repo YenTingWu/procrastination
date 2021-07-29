@@ -2,7 +2,7 @@ import create from 'zustand';
 import { combine } from 'zustand/middleware';
 import { isServer } from '@lib/isServer';
 
-const accessToken = '@procrastination/token';
+export const accessToken = '@procrastination/token';
 
 const getDefaultValues = () => {
   // Check tokens are already exists or not

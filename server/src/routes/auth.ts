@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   postTraditionalLogin,
   postTraditionalRegister,
+  postSignOut,
 } from '../controllers/auth';
 import { getRefreshToken } from '../controllers/auth/refreshToken';
 import {
@@ -34,6 +35,7 @@ const router = Router();
 
 router.get('/refresh_token', getRefreshToken);
 router.post('/login', postTraditionalLogin);
+router.post('/logout', postSignOut);
 router.post('/register', postTraditionalRegister);
 router.post('/twitter/web', postTwitterOAuth);
 router.post('/google/web', postGoogleAuthentication);

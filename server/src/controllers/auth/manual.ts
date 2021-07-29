@@ -86,3 +86,8 @@ export const postTraditionalRegister = async (req: Request, res: Response) => {
     .status(302)
     .redirect(`${CLIENT_BASE_URL}?accessToken=${createAccessToken(user)}`);
 };
+
+export const postSignOut = (_: Request, res: Response) => {
+  res.clearCookie('@procrastination/jid');
+  res.status(200).json({ ok: true, statusMessage: 'success' });
+};

@@ -1,1 +1,5 @@
-export { postTraditionalLogin, postTraditionalRegister } from './manual';
+export {
+  postTraditionalLogin,
+  postTraditionalRegister,
+  postSignOut,
+} from './manual';
