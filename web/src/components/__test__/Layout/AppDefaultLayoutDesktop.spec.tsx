@@ -1,5 +1,4 @@
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen } from '../test-utils';
 import { AppDefaultLayoutDesktop } from '../../Layout/AppDefaultLayoutDesktop';
 
 test('should render correctly', () => {

@@ -58,7 +58,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
         </Thead>
         <Tbody h="300px">
           {completedEvents.map(({ name, duration, expectedDuration, uuid }) => (
-            <Tr key={uuid}>
+            <Tr data-testid="table-row" key={uuid}>
               <Td fontSize="xs">{name}</Td>
               <Td fontSize="xs" isNumeric>
                 {formatNumber(duration, formattedSecondsOption)}

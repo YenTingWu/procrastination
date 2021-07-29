@@ -6,6 +6,7 @@ export const GoogleIcon = () => (
     viewBox="0 0 64 64"
     width="28px"
     height="28px"
+    data-testid="google-icon"
   >
     <path
       fill="#72caaf"

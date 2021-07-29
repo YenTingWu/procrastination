@@ -28,7 +28,13 @@
     "html/xml-extensions": [".html"],
     "html/indent": "+2"
   },
-  "plugins": ["react", "@typescript-eslint/eslint-plugin", "react-hooks"],
+  "plugins": [
+    "react",
+    "@typescript-eslint/eslint-plugin",
+    "react-hooks",
+    "testing-library",
+    "jsdom"
+  ],
   "rules": {
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn"

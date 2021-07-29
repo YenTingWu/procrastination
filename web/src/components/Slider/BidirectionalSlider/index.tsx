@@ -141,10 +141,16 @@ export const BidirectionalSlider: React.FC<BidirectionalSliderProps> = ({
       <div className={styleModule.slider}>
         <div className={styleModule['slider__track']}></div>
         <div ref={rangeRef} className={styleModule['slider__range']}></div>
-        <div className={styleModule['slider__left-value']}>
+        <div
+          data-testid="slider-left-value"
+          className={styleModule['slider__left-value']}
+        >
           {getLabel(valuesOfDomain[minVal])}
         </div>
-        <div className={styleModule['slider__right-value']}>
+        <div
+          data-testid="slider-right-value"
+          className={styleModule['slider__right-value']}
+        >
           {getLabel(valuesOfDomain[maxVal])}
         </div>
       </div>

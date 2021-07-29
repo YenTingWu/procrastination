@@ -70,6 +70,7 @@ export const DurationInput: React.FC<DurationInputProps> = ({
         </FormLabel>
         <Flex flex="1" alignItems="center" pr=".875rem">
           <Input
+            data-testid={`${name}-hours-input`}
             ref={hoursRef}
             h="43px"
             fontSize="sm"
@@ -88,6 +89,7 @@ export const DurationInput: React.FC<DurationInputProps> = ({
             Hr
           </Text>
           <Input
+            data-testid={`${name}-mins-input`}
             ref={minsRef}
             h="43px"
             fontSize="sm"

@@ -1,6 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Flex, FormLabel, Input, Textarea, Text } from '@chakra-ui/react';
-
 export interface FormLabelInputUIProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
@@ -25,7 +24,7 @@ export const FormLabelInputUI: React.FC<FormLabelInputUIProps> = ({
   onChange,
   ...attr
 }) => {
-  const { type, autoComplete, id } = attr;
+  const { type, autoComplete } = attr;
   const [isFocus, setFocus] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,6 +33,8 @@ export const FormLabelInputUI: React.FC<FormLabelInputUIProps> = ({
   const handleBlur = useCallback(() => setFocus(false), []);
 
   let isFocusOrHasValue = isFocus || value || inputRef.current?.value;
+
+  const labelAttr = htmlFor ? { htmlFor } : {};
 
   return (
     <Flex
@@ -44,7 +45,7 @@ export const FormLabelInputUI: React.FC<FormLabelInputUIProps> = ({
       }}
     >
       <FormLabel
-        htmlFor={htmlFor || ''}
+        {...labelAttr}
         m={0}
         px="1"
         position="absolute"
@@ -66,7 +67,7 @@ export const FormLabelInputUI: React.FC<FormLabelInputUIProps> = ({
          * rules by giving it the ID of the element that describes the constraints
          */
 
-        id={id || ''}
+        id={htmlFor || ''}
         aria-describedby={attr['aria-describedby'] || ''}
         type={type || ''}
         autoComplete={autoComplete || ''}
@@ -99,7 +100,7 @@ export const FormLabelTextareaUI: React.FC<FormLabelInputUIProps> = ({
   onChange,
   ...attr
 }) => {
-  const { type, autoComplete, id } = attr;
+  const { type, autoComplete } = attr;
   const [isFocus, setFocus] = useState<boolean>(false);
   const [numberOfChars, setNumberOfChars] = useState<number>(value.length || 0);
 
@@ -120,6 +121,7 @@ export const FormLabelTextareaUI: React.FC<FormLabelInputUIProps> = ({
   );
 
   let isFocusOrHasValue = isFocus || value || textareaRef.current?.value;
+  const labelAttr = htmlFor ? { htmlFor } : {};
 
   return (
     <Flex
@@ -131,7 +133,7 @@ export const FormLabelTextareaUI: React.FC<FormLabelInputUIProps> = ({
       }}
     >
       <FormLabel
-        htmlFor={htmlFor || ''}
+        {...labelAttr}
         m={0}
         px="1"
         position="absolute"
@@ -154,7 +156,7 @@ export const FormLabelTextareaUI: React.FC<FormLabelInputUIProps> = ({
          * rules by giving it the ID of the element that describes the constraints
          */
 
-        id={id || ''}
+        id={htmlFor || ''}
         aria-describedby={attr['aria-describedby'] || ''}
         type={type || ''}
         autoComplete={autoComplete || ''}

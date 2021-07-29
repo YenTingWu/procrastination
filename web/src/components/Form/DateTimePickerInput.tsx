@@ -210,9 +210,15 @@ export const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
 
   return (
     <Flex pl={10} pr={10} flexDirection="column" alignItems="center">
-      <Flex alignItems="center" ref={main} onClick={handleToggleDrop}>
+      <Flex
+        data-testid="main-date-picker-input-container"
+        alignItems="center"
+        ref={main}
+        onClick={handleToggleDrop}
+      >
         <FormLabel
           m="0"
+          htmlFor={label}
           fontWeight="extrabold"
           flex={'1 150px'}
           _hover={{ cursor: 'pointer' }}
@@ -221,6 +227,7 @@ export const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
           {label}
         </FormLabel>
         <Input
+          id={label}
           textAlign="center"
           fontSize="md"
           value={formattedDate}
@@ -231,10 +238,14 @@ export const DateTimePickerInput: React.FC<DateTimePickerInputProps> = ({
           _selection={{ bg: 'none' }}
         />
       </Flex>
-      {(fieldKey as OpenedPicker) === openedPicker && (
+      {openedPicker === (fieldKey as OpenedPicker) && (
         <>
           <Divider />
-          <Flex alignSelf="stretch" alignItems="center">
+          <Flex
+            data-testid="monthly-date-picker-container"
+            alignSelf="stretch"
+            alignItems="center"
+          >
             <UncontrolledMonthlyDatePicker
               flex={'3 40px'}
               monthInfo={{

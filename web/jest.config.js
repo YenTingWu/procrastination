@@ -1,5 +1,28 @@
 /** @type {import('@ts-jest/dist/types').InitialOptionsTsJest} */
-module.exports = {
+
+const TSCONFIG_PATH = './tsconfig.json';
+
+/**
+ * For example, {'@alias/*': [ 'path/to/alias/*' ]}
+ * Becomes {'@alias/(.*)':  '<rootDir>/path/to/alias/$1' }
+ */
+
+function getJestModuleNameMapper() {
+  const { paths } = require(TSCONFIG_PATH).compilerOptions;
+  const absolutePaths = Object.keys(paths);
+
+  return absolutePaths.reduce((acc, cur) => {
+    const newKey = cur.replace('*', '(.*)');
+    const path = '<rootDir>/' + paths[cur][0].replace('/*', '/$1');
+
+    return {
+      [newKey]: path,
+      ...acc,
+    };
+  }, {});
+}
+
+const config = {
   // The root of your source code, typically /src
   // `<rootDir>` is a token Jest substitutes
   roots: ['<rootDir>/src'],
@@ -22,4 +45,11 @@ module.exports = {
 
   // Module file extensions for importing
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  moduleNameMapper: {
+    ...getJestModuleNameMapper(),
+    '\\.(css)$': 'identity-obj-proxy',
+  },
+  transformIgnorePatterns: ['<rootDir>/node_modules/?!(d3)/'],
 };
+
+module.exports = config;
