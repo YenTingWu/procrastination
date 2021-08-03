@@ -18,6 +18,7 @@ import { ManipulateEventModal } from '@components/Modal/ManipulateEventModal';
 import { ConfirmModal } from '@components/Modal/ConfirmModal';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
 import { useEventDeleteMutation } from '@globalStore/server/useEventMutation';
+import { HeadController } from '@components/HeadController';
 
 /**
  * ## Calendar
@@ -140,6 +141,10 @@ export const Calendar: React.FC<CalendarProps> = ({}) => {
 
   return (
     <AppDefaultLayoutDesktop>
+      <HeadController
+        title="Calendar - app"
+        description="Calendar screen in procrastination"
+      />
       <NavigationSideBar avatar={avatar} placeholder={displayName} />
       <DailyScheduleShowcase
         onDeleteButtonClick={handleConfirmModalOpen}

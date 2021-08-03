@@ -13,7 +13,7 @@ export interface HeaderControllerProps {
  * @returns React.FC
  */
 
-export const HeaderController: NextPage<HeaderControllerProps> = ({
+export const HeadController: NextPage<HeaderControllerProps> = ({
   title,
   description,
 }) => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQueryClient } from 'react-query';
 import { AppDefaultLayoutDesktop } from '@components/Layout/AppDefaultLayoutDesktop';
+import { HeadController } from '@components/HeadController';
 import { NavigationSideBar } from '@components/NavigationSideBar';
 import { LoadingUI } from '@components/LoadingUI';
 import { AnalysisMainSection } from '@components/Analysis/AnalysisMainSection';
@@ -24,6 +25,10 @@ export function Analysis() {
 
   return (
     <AppDefaultLayoutDesktop>
+      <HeadController
+        title="Analysis - app"
+        description="This is a procrastination auth page"
+      />
       <NavigationSideBar placeholder={displayName} avatar={avatar} />
       <AnalysisMainSection events={completedEvents} />
     </AppDefaultLayoutDesktop>

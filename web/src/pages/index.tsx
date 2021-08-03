@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useSaveTokenFromQueryString } from '@hooks/useSaveTokenFromQueryString';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
 import { Flex, Link } from '@chakra-ui/layout';
-import { HeaderController } from '@components/HeadController';
+import { HeadController } from '@components/HeadController';
 import { LoadingUI } from '@components/LoadingUI';
 
 export default function Home({}) {
@@ -28,7 +28,7 @@ export default function Home({}) {
 
   return (
     <>
-      <HeaderController description="This is a procrastination landing page" />
+      <HeadController description="This is a procrastination landing page" />
 
       <Flex
         minH="100vh"

@@ -11,6 +11,7 @@ import { DroppableTodoMainSection } from '@components/D&D/DroppableTodoMainSecti
 import { ConfirmModal } from '@components/Modal/ConfirmModal';
 import { CreateTodoModal } from '@components/Modal/CreateTodoModal';
 import { User } from '@types';
+import { HeadController } from '@components/HeadController';
 
 export function Todo() {
   const queryClient = useQueryClient();
@@ -84,6 +85,10 @@ export function Todo() {
 
   return (
     <AppDefaultLayoutDesktop>
+      <HeadController
+        title="Todo - app"
+        description="Todo screen in procrastination"
+      />
       <NavigationSideBar avatar={avatar} placeholder={displayName} />
       <DroppableTodoMainSection
         queryClient={queryClient}

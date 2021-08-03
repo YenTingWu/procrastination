@@ -1,11 +1,11 @@
-import { HeaderController } from '@components/HeadController';
+import { HeadController } from '@components/HeadController';
 import { AppDefaultLayoutDesktop } from '@components/Layout/AppDefaultLayoutDesktop';
 import { SignUpForm } from '@components/AuthForm/SignupForm';
 
 export default function SignUp({}) {
   return (
     <AppDefaultLayoutDesktop center={true}>
-      <HeaderController
+      <HeadController
         title="Sign Up"
         description="This is a procrastination auth page"
       />

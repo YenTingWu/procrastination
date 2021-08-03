@@ -8,6 +8,7 @@ import { ModifyProfileForm } from '@components/AuthForm/ModifyProfileForm';
 import { User } from '@types';
 import { LoadingUI } from '@components/LoadingUI';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
+import { HeadController } from '@components/HeadController';
 
 export function Profile() {
   const queryClient = useQueryClient();
@@ -22,6 +23,10 @@ export function Profile() {
 
   return (
     <AppDefaultLayoutDesktop>
+      <HeadController
+        title="Profile - app"
+        description="Profile screen in procrastination"
+      />
       <NavigationSideBar avatar={avatar} placeholder={displayName || ''} />
       <Flex flex="1 1 0" justifyContent="center" alignItems="center">
         <ModifyProfileForm
