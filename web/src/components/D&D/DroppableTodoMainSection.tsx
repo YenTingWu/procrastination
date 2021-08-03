@@ -6,7 +6,7 @@ import React, {
   useCallback,
   createContext,
 } from 'react';
-import { Flex, Grid } from '@chakra-ui/react';
+import { Flex, Grid } from '@chakra-ui/layout';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { DroppableList, ModalController } from '@components/D&D/DroppableList';
 import { DeleteButton, CreateButton } from '@components/IconButton';
@@ -18,6 +18,7 @@ import {
   useTodoModifyMutation,
   useTodoUpdateMutation,
 } from '@globalStore/server/useTodoMutation';
+import { useTypeSafeBreakpointValue } from '@hooks/useTypeSafeBreakpointValue';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
 
 type ScreenMode = 'delete' | 'duplicate' | 'base';
@@ -209,6 +210,17 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
   const { mutate: todoUpdateMutate } = useTodoUpdateMutation(queryClient);
   const token = useTokenStore((s) => s.accessToken);
 
+  // Media Query
+  const containerPaddingLeft = useTypeSafeBreakpointValue({
+    default: '10',
+    xl: '20',
+  });
+  const gridGap = useTypeSafeBreakpointValue({
+    default: 5,
+    lg: 7,
+    xl: 10,
+  });
+
   const [droppableListState, droppableListDispatch] = useReducer(
     dragAndDropControllerReducer,
     {
@@ -354,9 +366,16 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
             />
           </Flex>
         </Flex>
-        <Flex flex="12 1 0" overflowX="scroll" pt="10" pb="10" pl="20" pr="10">
+        <Flex
+          flex="12 1 0"
+          overflowX="scroll"
+          pt="10"
+          pb="10"
+          pl={containerPaddingLeft}
+          pr="10"
+        >
           <DragDropContext onDragEnd={handleDragEnd}>
-            <Grid templateColumns="repeat(4, 1fr)" gap={10}>
+            <Grid templateColumns="repeat(4, 1fr)" gap={gridGap}>
               {Object.values(EventStatus).map((id) => (
                 <DroppableList
                   key={id}
@@ -373,9 +392,3 @@ export const DroppableTodoMainSection: React.FC<DroppableTodoMainSectionProps> =
     </ModeContextStore.Provider>
   );
 };
-
-/**
- * 1. implement Delete functionality
- * 2. pending list ( duration > 0 and status === WORKING)
- * 3.
- */

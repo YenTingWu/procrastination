@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/layout';
+import { Button } from '@chakra-ui/button';
 
 export interface LogoButtonProps {
   title: string;

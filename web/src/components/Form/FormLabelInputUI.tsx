@@ -1,5 +1,9 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Flex, FormLabel, Input, Textarea, Text } from '@chakra-ui/react';
+import { Textarea } from '@chakra-ui/textarea';
+import { Flex, Text } from '@chakra-ui/layout';
+import { Input } from '@chakra-ui/input';
+import { FormLabel } from '@chakra-ui/form-control';
+
 export interface FormLabelInputUIProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;

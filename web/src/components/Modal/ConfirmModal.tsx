@@ -1,13 +1,12 @@
 import React from 'react';
+import { Button } from '@chakra-ui/button';
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalFooter,
-  Button,
-} from '@chakra-ui/react';
-
+} from '@chakra-ui/modal';
 interface ConfirmModalProps {
   isOpen: boolean;
   content: string;

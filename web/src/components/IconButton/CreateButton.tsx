@@ -1,7 +1,7 @@
 import React from 'react';
 import { SmallAddIcon } from '@chakra-ui/icons';
-import { IconButton, IconButtonProps, Tooltip } from '@chakra-ui/react';
-
+import { Tooltip } from '@chakra-ui/tooltip';
+import { IconButton, IconButtonProps } from '@chakra-ui/button';
 interface CreateButtonProps {
   onClick: () => void;
   style?: Omit<IconButtonProps, 'aria-label'>;

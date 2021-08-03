@@ -1,15 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import format from 'date-fns/fp/format';
-import {
-  Box,
-  Flex,
-  Heading,
-  VStack,
-  Text,
-  Fade,
-  BackgroundProps,
-} from '@chakra-ui/react';
+import { BackgroundProps } from '@chakra-ui/react';
+import { Fade } from '@chakra-ui/transition';
+import { Box, Flex, Heading, VStack, Text } from '@chakra-ui/layout';
 import { DeleteIcon } from '@chakra-ui/icons';
+import { useTypeSafeBreakpointValue } from '@hooks/useTypeSafeBreakpointValue';
 import { Schedule } from '@types';
 import { DeleteButton } from '@components/IconButton';
 
@@ -98,6 +93,11 @@ export const DailyScheduleShowcase: React.FC<DailyScheduleShowcaseProps> = ({
   onDeleteButtonClick,
 }) => {
   const [isDeleteMode, setDeleteMode] = useState<boolean>(false);
+  const titleFontSize = useTypeSafeBreakpointValue({
+    default: '2xl',
+    lg: '4xl',
+    xl: '5xl',
+  });
 
   const toggleDeleteMode = useCallback(() => setDeleteMode((s) => !s), []);
 
@@ -120,7 +120,7 @@ export const DailyScheduleShowcase: React.FC<DailyScheduleShowcaseProps> = ({
         boxShadow="1px 1px 5px 3px rgba(100, 100, 100, .25)"
       >
         <Flex>
-          <Heading fontSize="5xl" letterSpacing=".25rem">
+          <Heading fontSize={titleFontSize} letterSpacing=".25rem">
             Today Schedule
           </Heading>
           <DeleteButton

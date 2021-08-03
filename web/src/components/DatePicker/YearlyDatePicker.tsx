@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import { Flex, Text, SimpleGrid, useBreakpointValue } from '@chakra-ui/react';
+import { Flex, Text, SimpleGrid } from '@chakra-ui/layout';
+import { useTypeSafeBreakpointValue } from '@hooks/useTypeSafeBreakpointValue';
 import { UncontrolledMonthlyDatePicker } from './UncontrolledMonthlyDatePicker';
 import { useCurrentSelectedDate } from '@globalStore/client/useCurrentSelectedDate';
 import { DateInfoType } from '@types';
@@ -15,17 +16,17 @@ export const YearlyDatePicker: React.FC<YearlyDatePickerProps> = () => {
 
   const [year, setYear] = useState<number>(currentSelectedDate.year);
 
-  const containerWidthVariant = useBreakpointValue({
+  const containerWidthVariant = useTypeSafeBreakpointValue({
     xl: '980px',
     lg: '800px',
-    base: '100%',
+    default: '100%',
   });
 
-  const columnsVariant = useBreakpointValue({
+  const columnsVariant = useTypeSafeBreakpointValue({
     xl: 4,
     lg: 3,
     md: 2,
-    base: 1,
+    default: 1,
   });
 
   const handleAddYear = useCallback(() => setYear((y) => y + 1), []);
@@ -46,7 +47,7 @@ export const YearlyDatePicker: React.FC<YearlyDatePickerProps> = () => {
   }
 
   return (
-    <Flex flexDirection="column" w={containerWidthVariant as string}>
+    <Flex flexDirection="column" w={containerWidthVariant}>
       <Flex justifyContent="center" alignItems="center" alignSelf="center">
         <ChevronLeftIcon
           w="20px"

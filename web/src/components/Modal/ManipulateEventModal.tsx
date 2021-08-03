@@ -6,9 +6,9 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
-  Box,
-} from '@chakra-ui/react';
+} from '@chakra-ui/modal';
+import { Button } from '@chakra-ui/button';
+import { Box } from '@chakra-ui/layout';
 import axios from 'axios';
 import { Formik, FormikProps, Form, FormikHelpers } from 'formik';
 import * as yup from 'yup';

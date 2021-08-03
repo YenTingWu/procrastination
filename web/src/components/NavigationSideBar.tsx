@@ -8,7 +8,7 @@ import { Flex, Divider } from '@chakra-ui/layout';
 import { Icon } from '@chakra-ui/icons';
 import { Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/menu';
 import { LogoIcon } from '@components/Icon';
-import { FcTodoList, FcAreaChart } from 'react-icons/fc';
+import { FcCalendar, FcAreaChart } from 'react-icons/fc';
 import { FaUser, FaSignOutAlt } from 'react-icons/fa';
 import { useHistory } from 'react-router-dom';
 import {
@@ -54,14 +54,17 @@ export const NavigationSideBar: React.FC<NavigationSideBarProps> = ({
   const setToken = useTokenStore((s) => s.setTokens);
 
   const handleLogoIconClick = useCallback(() => history.push('/'), []);
-  const handleNavigateTodo = useCallback(() => history.push('/todo'), []);
+  const handleNavigateCalendar = useCallback(
+    () => history.push('/calendar'),
+    []
+  );
   const handleNavigateProfile = useCallback(() => history.push('/profile'), []);
   const handleNavigateAnalysis = useCallback(
     () => history.push('/analysis'),
     []
   );
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     setToken({ accessToken: '' });
     localStorage.setItem(ACCESS_TOKEN_LOCAL_STORAGE_ID, '');
     try {
@@ -74,7 +77,7 @@ export const NavigationSideBar: React.FC<NavigationSideBarProps> = ({
     } catch {}
 
     push('/');
-  };
+  }, [setToken, push]);
 
   return (
     <Flex
@@ -92,16 +95,16 @@ export const NavigationSideBar: React.FC<NavigationSideBarProps> = ({
       <Divider w="80%" />
 
       <Flex flex="1" pt="4" flexDirection="column" alignItems="center">
-        <Tooltip label="Todo" fontSize="sm" placement="auto-start">
+        <Tooltip label="Day Schedule" fontSize="sm" placement="auto-start">
           <chakra.span>
             <Icon
-              as={FcTodoList}
+              as={FcCalendar}
               w="30px"
               h="30px"
               borderRadius="3px"
               boxShadow="1px 1px 3px 1px rgba(0, 0, 0, 0.25)"
               _hover={{ cursor: 'pointer' }}
-              onClick={handleNavigateTodo}
+              onClick={handleNavigateCalendar}
             />
           </chakra.span>
         </Tooltip>

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useQueryClient } from 'react-query';
-import { useDisclosure } from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/hooks';
 import { useEventDeleteMutation } from '@globalStore/server/useEventMutation';
 import { QUERY_KEYS } from '@globalStore/server/queryKeys';
 import { useTokenStore } from '@globalStore/client/useTokenStore';

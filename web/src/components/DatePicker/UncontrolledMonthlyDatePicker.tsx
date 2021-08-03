@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { Flex, SimpleGrid, Text, Box, FlexProps } from '@chakra-ui/react';
+import { Flex, SimpleGrid, Text, Box, FlexProps } from '@chakra-ui/layout';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { WEEKDAYS, MONTHS, DateInfoType } from '@types';
 import { getThisMonthDateInfo } from '../../lib/getThisMonthDateInfo';

@@ -1,7 +1,8 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useField } from 'formik';
-import { Flex, Input, Text, FormLabel } from '@chakra-ui/react';
-
+import { Flex, Text } from '@chakra-ui/layout';
+import { Input } from '@chakra-ui/input';
+import { FormLabel } from '@chakra-ui/form-control';
 interface DurationInputProps {
   name: string;
   label: string;

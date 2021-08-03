@@ -19,7 +19,7 @@ function renderBasePath() {
     localStorage.setItem(key, '');
     return <Redirect to={{ pathname: path }} />;
   }
-  return <Calendar />;
+  return <Todo />;
 }
 
 /**
@@ -30,7 +30,7 @@ const Routes = () => {
     <Router basename="/dashboard">
       <Switch>
         <Route path="/" exact render={renderBasePath} />
-        <Route path="/todo" exact component={Todo} />
+        <Route path="/calendar" exact component={Calendar} />
         <Route path="/profile" exact component={Profile} />
         <Route path="/analysis" component={Analysis} />
       </Switch>

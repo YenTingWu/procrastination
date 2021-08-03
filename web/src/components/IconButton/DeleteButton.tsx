@@ -1,6 +1,7 @@
 import React from 'react';
-import { IconButton, IconButtonProps, Tooltip } from '@chakra-ui/react';
+import { Tooltip } from '@chakra-ui/tooltip';
 import { DeleteIcon } from '@chakra-ui/icons';
+import { IconButton, IconButtonProps } from '@chakra-ui/button';
 
 interface DeleteButtonProps {
   isDeleteMode: boolean;

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@chakra-ui/button';
 import {
   Modal,
   ModalOverlay,
@@ -6,8 +7,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
-} from '@chakra-ui/react';
+} from '@chakra-ui/modal';
 import * as yup from 'yup';
 import axios from 'axios';
 import { useQueryClient } from 'react-query';

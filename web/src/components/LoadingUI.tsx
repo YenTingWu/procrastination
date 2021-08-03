@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Heading } from '@chakra-ui/react';
+import { Flex, Heading } from '@chakra-ui/layout';
 
 // TODO: Loading Screen
 

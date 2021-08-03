@@ -57,23 +57,25 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
           </Tr>
         </Thead>
         <Tbody h="300px">
-          {completedEvents.map(({ name, duration, expectedDuration, uuid }) => (
-            <Tr data-testid="table-row" key={uuid}>
-              <Td fontSize="xs">{name}</Td>
-              <Td fontSize="xs" isNumeric>
-                {formatNumber(duration, formattedSecondsOption)}
-              </Td>
-              <Td fontSize="xs" isNumeric>
-                {formatNumber(expectedDuration, formattedSecondsOption)}
-              </Td>
-              <Td fontSize="xs" isNumeric>
-                {formatNumber(
-                  +((duration / expectedDuration) * 100).toFixed(2)
-                )}
-                %
-              </Td>
-            </Tr>
-          ))}
+          {completedEvents.map(
+            ({ name, duration, expectedDuration, uuid }, i) => (
+              <Tr data-testid="table-row" key={`${uuid}_${i}`}>
+                <Td fontSize="xs">{name}</Td>
+                <Td fontSize="xs" isNumeric>
+                  {formatNumber(duration, formattedSecondsOption)}
+                </Td>
+                <Td fontSize="xs" isNumeric>
+                  {formatNumber(expectedDuration, formattedSecondsOption)}
+                </Td>
+                <Td fontSize="xs" isNumeric>
+                  {formatNumber(
+                    +((duration / expectedDuration) * 100).toFixed(2)
+                  )}
+                  %
+                </Td>
+              </Tr>
+            )
+          )}
         </Tbody>
       </Table>
     </Flex>

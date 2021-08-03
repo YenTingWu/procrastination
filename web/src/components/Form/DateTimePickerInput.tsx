@@ -5,7 +5,10 @@ import React, {
   useMemo,
   Reducer,
 } from 'react';
-import { Flex, Input, Select, FormLabel, Divider } from '@chakra-ui/react';
+import { Flex, Divider } from '@chakra-ui/layout';
+import { Select } from '@chakra-ui/select';
+import { Input } from '@chakra-ui/input';
+import { FormLabel } from '@chakra-ui/form-control';
 import { useField } from 'formik';
 import format from 'date-fns/fp/format';
 import { UncontrolledMonthlyDatePicker } from '@components/DatePicker/UncontrolledMonthlyDatePicker';

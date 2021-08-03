@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, Flex, Image } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/layout';
+import { Button } from '@chakra-ui/button';
+import { Image } from '@chakra-ui/image';
 import styled from '@emotion/styled';
 import type { QueryClient } from 'react-query';
 import { FormikHelpers, useFormik } from 'formik';

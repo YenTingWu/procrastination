@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
-import { Flex, Heading, Text, Box, useBreakpointValue } from '@chakra-ui/react';
 import memorize from 'memoize-one';
-import { FixedSizeList, areEqual } from 'react-window';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
-import { Event } from '@types';
+import { Flex, Heading, Text, Box } from '@chakra-ui/layout';
+import { useTypeSafeBreakpointValue } from '@hooks/useTypeSafeBreakpointValue';
+import { FixedSizeList, areEqual } from 'react-window';
 import ListStyle from '@components/D&D/DroppableList.style.module.css';
 import { DroppableVirtualizedListItem } from '@components/D&D/DroppableVirtualizedListItem';
+import type { Event } from '@types';
 import { getTimeObject } from '@hooks/useTimeCounter';
 import { replaceSecWithFormattedHoursAndMins } from './lib/replaceSecWithFormattedHoursAndMins';
 import { getTwoDigit } from './lib/getTwoDigit';
@@ -109,7 +110,30 @@ export const DroppableList: React.FC<DroppableListProps> = ({
   onCountSecond,
 }) => {
   const itemData = createItemData(list, modalControllers, onCountSecond);
-  const height = useBreakpointValue({ base: 250, xl: 400 });
+
+  // Media Query
+  const height = useTypeSafeBreakpointValue({
+    default: 250,
+    lg: 300,
+    xl: 400,
+  });
+
+  const width = useTypeSafeBreakpointValue({ default: 200, xl: 250, lg: 200 });
+  const paddingHorizon = useTypeSafeBreakpointValue({
+    default: '.1rem',
+    xl: '.75rem',
+  });
+
+  const categoryTitleFontSize = useTypeSafeBreakpointValue({
+    xl: '3xl',
+    default: '2xl',
+  });
+
+  const itemSize = useTypeSafeBreakpointValue({
+    default: 65,
+    xl: 80,
+  });
+
   return (
     <Droppable
       droppableId={droppableId}
@@ -160,7 +184,7 @@ export const DroppableList: React.FC<DroppableListProps> = ({
               mt=".1rem"
               color="gray.500"
               lineHeight="1.225"
-              noOfLines={[1, 2]}
+              noOfLines={[1, 1, 1, 1, 2]}
               fontSize="x-small"
             >
               {description}
@@ -173,7 +197,7 @@ export const DroppableList: React.FC<DroppableListProps> = ({
         <Flex
           flexDir="column"
           alignItems="center"
-          padding=".75rem"
+          padding={`.75rem ${paddingHorizon}`}
           borderRadius="4"
           boxShadow="1px 1px 5px 3px rgba(100, 100, 100, .4)"
         >
@@ -181,7 +205,8 @@ export const DroppableList: React.FC<DroppableListProps> = ({
             as="h2"
             _hover={{ cursor: 'default' }}
             _selection={{ bg: 'none' }}
-            letterSpacing=".3rem"
+            letterSpacing=".2rem"
+            fontSize={categoryTitleFontSize}
           >
             {droppableId}
           </Heading>
@@ -192,12 +217,12 @@ export const DroppableList: React.FC<DroppableListProps> = ({
             bg={snapshot.isDraggingOver ? 'purple.50' : 'white'}
           >
             <FixedSizeList
-              height={height || 250}
-              width={300}
+              height={height}
+              width={width}
               className={ListStyle['task-left']}
               itemCount={list.length}
               itemData={itemData}
-              itemSize={80}
+              itemSize={itemSize}
               outerRef={provided.innerRef}
             >
               {VirtualListRow}

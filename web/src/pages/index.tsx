@@ -3,7 +3,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useSaveTokenFromQueryString } from '@hooks/useSaveTokenFromQueryString';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
-import { Flex, Link } from '@chakra-ui/react';
+import { Flex, Link } from '@chakra-ui/layout';
 import { HeaderController } from '@components/HeadController';
 import { LoadingUI } from '@components/LoadingUI';
 

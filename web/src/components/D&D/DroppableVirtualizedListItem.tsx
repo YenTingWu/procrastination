@@ -1,5 +1,5 @@
 import React, { useMemo, useContext, useEffect } from 'react';
-import { Flex, Heading, Text, Box } from '@chakra-ui/react';
+import { Flex, Heading, Text, Box } from '@chakra-ui/layout';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { DraggableProvided } from 'react-beautiful-dnd';
 import { Event, EventStatus } from '@types';
@@ -116,7 +116,7 @@ export const DroppableVirtualizedListItem = ({
           mt=".1rem"
           color="gray.500"
           lineHeight="1.225"
-          noOfLines={[1, 2]}
+          noOfLines={[1, 1, 1, 1, 2]}
           fontSize="x-small"
         >
           {description}

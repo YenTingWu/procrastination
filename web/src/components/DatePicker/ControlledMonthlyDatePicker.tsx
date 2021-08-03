@@ -1,5 +1,5 @@
 import React, { useMemo, useReducer, Reducer, useCallback } from 'react';
-import { Flex, SimpleGrid, Text } from '@chakra-ui/react';
+import { Flex, SimpleGrid, Text } from '@chakra-ui/layout';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { WEEKDAYS, MONTHS, DateInfoType } from '@types';
 import { useCurrentSelectedDate } from '@globalStore/client/useCurrentSelectedDate';
