@@ -1,5 +1,9 @@
 import styled from '@emotion/styled';
 
+type StyledLabelProps = {
+  fontSize: string;
+};
+
 export const StyledSvg = styled.svg`
   user-select: none;
 `;
@@ -16,8 +20,8 @@ export const StyledCircle = styled.circle`
   fill: #137b80;
 `;
 
-export const StyledLabel = styled.text`
-  fill: #333333;
-  font-size: 1.5rem;
-  font-weight: 900;
-`;
+export const StyledLabel = styled.text(({ fontSize }: StyledLabelProps) => ({
+  fill: '#333333',
+  fontSize,
+  fontWeight: 900,
+}));

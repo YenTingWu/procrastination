@@ -30,7 +30,7 @@ export const AxisBottom: React.FC<AxisBottomProps> = ({
             </StyledText>
           </g>
         )),
-      [xScale]
+      [xScale, innerHeight]
     )}
   </>
 );

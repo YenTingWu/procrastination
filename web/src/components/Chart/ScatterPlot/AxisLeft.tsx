@@ -29,7 +29,7 @@ export const AxisLeft: React.FC<AxisLeftProps> = ({
             </StyledText>
           </g>
         )),
-      [yScale]
+      [yScale, innerWidth]
     )}
   </>
 );

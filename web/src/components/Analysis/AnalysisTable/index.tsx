@@ -1,4 +1,5 @@
 import React from 'react';
+import { Flex } from '@chakra-ui/layout';
 import {
   Table,
   Thead,
@@ -7,8 +8,7 @@ import {
   Th,
   Td,
   TableCaption,
-  Box,
-} from '@chakra-ui/react';
+} from '@chakra-ui/table';
 import { Event } from '@types';
 
 const tableHeadTitle = {
@@ -36,7 +36,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
   completedEvents,
 }) => {
   return (
-    <Box h="400px" overflowY="scroll">
+    <Flex h="400px" overflowY="scroll" justifyContent="center">
       <Table
         size="sm"
         w="30%"
@@ -76,6 +76,6 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
           ))}
         </Tbody>
       </Table>
-    </Box>
+    </Flex>
   );
 };

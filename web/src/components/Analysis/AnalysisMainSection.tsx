@@ -47,17 +47,33 @@ export const AnalysisMainSection: React.FC<AnalysisMainSection> = ({
   );
 
   return (
-    <Flex flexDir="column" alignItems="center" pt="7rem" flex="1" minH="100vh">
+    <Flex
+      flexDir="column"
+      alignItems="center"
+      pt={['3.5rem', '3.5rem', '3.5rem', '3.5rem', '7rem']}
+      flex="1"
+      minH="100vh"
+      h="100vh"
+      overflow="scroll"
+    >
       <BidirectionalSlider
         width={'40%'}
         domain={domain}
         onChange={handleDomainChange}
       />
-      <SimpleGrid mt="8rem" columns={[1, null, 2]} gap={2}>
+      <SimpleGrid
+        mt={['4rem', '4rem', '5rem', '4rem', '8rem']}
+        columns={[1, 1, 1, 2]}
+        pl="1rem"
+        pr="1rem"
+        gap={2}
+      >
         <Flex justifyContent="center">
           <AnalysisTable completedEvents={filteredEvents} />
         </Flex>
-        <ScatterPlot events={filteredEvents} circleRadius={4} />
+        <Flex justifyContent="center" alignItems="center">
+          <ScatterPlot events={filteredEvents} circleRadius={4} />
+        </Flex>
       </SimpleGrid>
     </Flex>
   );

@@ -16,8 +16,8 @@ function getJestModuleNameMapper() {
     const path = '<rootDir>/' + paths[cur][0].replace('/*', '/$1');
 
     return {
-      [newKey]: path,
       ...acc,
+      [newKey]: path,
     };
   }, {});
 }
