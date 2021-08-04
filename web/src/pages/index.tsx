@@ -1,35 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import { useSaveTokenFromQueryString } from '@hooks/useSaveTokenFromQueryString';
-import { useTokenStore } from '@globalStore/client/useTokenStore';
 import { Flex, Link } from '@chakra-ui/layout';
+import { ImageGallery } from '@components/Gallery/ImageGallery';
 import { HeadController } from '@components/HeadController';
 import { LoadingUI } from '@components/LoadingUI';
+import { useCheckTokenToNavigateDashboard } from '@hooks/useCheckTokenToNavigateDashboard';
 
 export default function Home({}) {
   useSaveTokenFromQueryString();
-  // TODO: Check accessToken from cookie
-  const hasTokens = useTokenStore((s) => !!s.accessToken);
-  const { push } = useRouter();
-  const [isCheckedToken, setCheckedToken] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (hasTokens) {
-      push('/dashboard');
-    } else {
-      setCheckedToken(true);
-    }
-  }, [push]);
+  const { isCheckedToken } = useCheckTokenToNavigateDashboard();
 
   if (!isCheckedToken) {
     return <LoadingUI />;
   }
 
   return (
-    <>
+    <Flex minH="100vh" w="100%" alignItems="center" flexDir="column" pb="200">
       <HeadController description="This is a procrastination landing page" />
-
       <Flex
         minH="100vh"
         minW="100%"
@@ -43,6 +31,7 @@ export default function Home({}) {
           <Link>sign up </Link>
         </NextLink>
       </Flex>
-    </>
+      <ImageGallery />
+    </Flex>
   );
 }
