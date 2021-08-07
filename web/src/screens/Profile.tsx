@@ -3,10 +3,10 @@ import { Flex } from '@chakra-ui/layout';
 import { useQueryClient } from 'react-query';
 import { QUERY_KEYS } from '@globalStore/server/queryKeys';
 import { AppDefaultLayoutDesktop } from '@components/Layout/AppDefaultLayoutDesktop';
-import { NavigationSideBar } from '@components/NavigationSideBar';
+import { NavigationSideBar } from '@components/Navigation/App/NavigationSideBar';
 import { ModifyProfileForm } from '@components/AuthForm/ModifyProfileForm';
 import { User } from '@types';
-import { LoadingUI } from '@components/LoadingUI';
+import { LoadingUI } from '@components/UI/LoadingUI';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
 import { HeadController } from '@components/HeadController';
 

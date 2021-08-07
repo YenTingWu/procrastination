@@ -11,6 +11,8 @@ import { LogoButton } from '@components/Form/LogoButton';
 import { FormLabelInputUI } from '@components/Form/FormLabelInputUI';
 import { GoogleIcon } from '@components/Icon';
 import { API_BASE_URL } from '../../config';
+import { SocialLoginType } from '@types';
+import { handleSocialLogin as onSocialLogin } from '@lib/handleSocialLogin';
 
 export const StyledForm = styled.form`
   max-width: 276px;
@@ -19,11 +21,6 @@ export const StyledForm = styled.form`
   flex-direction: column;
   align-items: stretch;
 `;
-
-export enum SocialLoginType {
-  GOOGLE = 'google',
-  TWITTER = 'twitter',
-}
 
 type SignInFormInput = {
   email: string;
@@ -40,14 +37,7 @@ export interface SignInFormProps {}
 export const SignInForm: React.FC<SignInFormProps> = () => {
   // TODO: Find a way to bypass cors
   const handleSocialLogin = useDebounceCallback(
-    async (socialLoginType: SocialLoginType) => {
-      const res = await axios({
-        baseURL: API_BASE_URL,
-        url: `/auth/${socialLoginType}/web`,
-        method: 'POST',
-      });
-      window.location.href = res.data.url;
-    },
+    async (socialLoginType: SocialLoginType) => onSocialLogin(socialLoginType),
     400,
     []
   );

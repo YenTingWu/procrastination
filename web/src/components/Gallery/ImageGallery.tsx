@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Flex, Box, Grid } from '@chakra-ui/layout';
+import { Flex, Box, Grid, FlexProps } from '@chakra-ui/layout';
 import { Image } from '@chakra-ui/image';
 import { getBoundingClientRectWithCenterPoint } from './lib/getBoundingClientRectWithCenterPoint';
 import { getRandomIntArray } from './lib/getRandomIntArray';
@@ -13,23 +13,16 @@ export type Coordinates = {
 
 export type ImageReference = Record<string, HTMLImageElement | null>;
 
+interface ImageGalleryProps extends FlexProps {
+  images?: string[];
+  width?: number;
+}
+
 type Mode = 'animating' | 'done' | 'gallery';
-
-const RATIO = 2.73;
-
-const CONTAINER_WIDTH = 480;
-const CONTAINER_HEIGHT = 360;
-
-const IMAGE_WIDTH = CONTAINER_WIDTH / RATIO;
-const IMAGE_HEIGHT = CONTAINER_HEIGHT / RATIO;
-
-const ZOOM_IN_RATIO = RATIO + 0.05;
-
-const IMAGE_BORDER_RADIUS = 4;
 
 const TARGET_IMAGE = 'https://source.unsplash.com/1XvjS1fCrms/';
 
-const images = [
+const IMAGES = [
   'https://source.unsplash.com/8wmbUbLUsz4/',
   'https://source.unsplash.com/RxE6AYn-Y5k/',
   'https://source.unsplash.com/wcE2fS3Amoc/',
@@ -57,7 +50,57 @@ const images = [
   'https://source.unsplash.com/IjPWFZncmxs/',
 ];
 
-export const ImageGallery = () => {
+const TRANSITION = '.5s transform cubic-bezier(.96,.15,.19, .89)';
+
+// function calculateAllAmount(width: string | number) {
+//   const RATIO = 2.73;
+//   const ZOOM_IN_RATIO = RATIO + 0.05;
+
+//   if (typeof width === 'number') {
+//     const CONTAINER_WIDTH = width;
+//     const CONTAINER_HEIGHT = (width / 4) * 3;
+//     const IMAGE_WIDTH = width / RATIO;
+//     const IMAGE_HEIGHT = CONTAINER_HEIGHT / RATIO;
+
+//     return {
+//       CONTAINER_WIDTH,
+//       CONTAINER_HEIGHT,
+//       IMAGE_WIDTH,
+//       IMAGE_HEIGHT,
+//       ZOOM_IN_RATIO,
+//     };
+//   }
+
+//   const CONTAINER_WIDTH = `${width}`;
+//   const CONTAINER_HEIGHT = `calc((${width} / 4) * 3)`;
+//   const IMAGE_WIDTH = `calc(${width} / RATIO)`;
+//   const IMAGE_HEIGHT = `calc(((${width} / 4) * 3) / ${RATIO})`;
+
+//   return {
+//     CONTAINER_WIDTH,
+//     CONTAINER_HEIGHT,
+//     IMAGE_WIDTH,
+//     IMAGE_HEIGHT,
+//     ZOOM_IN_RATIO,
+//   };
+// }
+
+export const ImageGallery: React.FC<ImageGalleryProps> = ({
+  images = IMAGES,
+  width = 480,
+}) => {
+  const RATIO = 2.73;
+
+  const CONTAINER_WIDTH = width;
+  const CONTAINER_HEIGHT = (width / 4) * 3;
+
+  const IMAGE_WIDTH = width / RATIO;
+  const IMAGE_HEIGHT = CONTAINER_HEIGHT / RATIO;
+
+  const ZOOM_IN_RATIO = RATIO + 0.05;
+
+  const IMAGE_BORDER_RADIUS = 4;
+
   const [zoomRatio, setZoomRatio] = useState<number>(1);
   const [delta, setDelta] = useState<Coordinates>({ x: 0, y: 0 });
   const [selected, setSelected] = useState<string>('');
@@ -98,7 +141,10 @@ export const ImageGallery = () => {
 
   // animation
   useEffect(() => {
+    //TODO: Clear the timeout function
     const switchImagesAutomatically = (time: number, targetItem: string) => {
+      let timeoutIds = [];
+
       const delay = 1500;
       const zoomInDelay = 300;
       const max = images.length - 1;
@@ -109,33 +155,43 @@ export const ImageGallery = () => {
       (function iterateTimeout(count: number, indice: number[]) {
         // The last switch should switch to the specific image
         if (count <= 0) {
-          setTimeout(() => {
+          const lastImageTimeoutId = setTimeout(() => {
             setSelected(targetItem);
-            setTimeout(() => {
+            const collectImagesTimeoutId = setTimeout(() => {
               const newImagePositions = getImagesPositionForCollectingImagesToTargetPosition(
                 targetItem,
                 imagesRef.current
               );
 
               newImagePositions && setImagesPosition(newImagePositions);
-              setTimeout(() => {
+              const zoomInTimeoutId = setTimeout(() => {
                 setZoomRatio(ZOOM_IN_RATIO);
                 setMode('done');
               }, zoomInDelay);
+              timeoutIds.push(zoomInTimeoutId);
             }, delay);
+            timeoutIds.push(collectImagesTimeoutId);
           }, delay);
+          timeoutIds.push(lastImageTimeoutId);
+
           return;
         }
 
         // Switch a image in each 2 seconds until the count is equal to 0
-        setTimeout(() => {
+        const switchingImageTimeout = setTimeout(() => {
           setSelected(images[indice[count]]);
           iterateTimeout(count - 1, indice);
         }, delay);
+        timeoutIds.push(switchingImageTimeout);
       })(time - 1, imagesIndice);
+
+      return timeoutIds;
     };
 
-    switchImagesAutomatically(6, TARGET_IMAGE);
+    const timeoutIds = switchImagesAutomatically(6, TARGET_IMAGE);
+    return () => {
+      timeoutIds.map((id) => clearTimeout(id));
+    };
   }, []);
 
   useEffect(() => {
@@ -192,9 +248,9 @@ export const ImageGallery = () => {
         borderRadius={`${IMAGE_BORDER_RADIUS}px`}
         borderWidth="3px"
         borderColor="white"
-        zIndex="10000"
+        zIndex="100"
         transform={`scale(${zoomRatio})`}
-        transition={'.5s transform cubic-bezier(.96,.15,.19, .89)'}
+        transition={TRANSITION}
         onClick={handleLensClick}
       />
       <Grid
@@ -204,7 +260,7 @@ export const ImageGallery = () => {
         w="190%"
         templateColumns="repeat(5, 1fr)"
         gap="8px"
-        transition={'.5s transform cubic-bezier(.96,.15,.19, .89)'}
+        transition={TRANSITION}
         transformOrigin={`${gridTransformOrigin.x}px  ${gridTransformOrigin.y}px`}
         transform={`translate(${delta.x}px, ${delta.y}px) scale(${zoomRatio})`}
       >
@@ -228,7 +284,7 @@ export const ImageGallery = () => {
                 cursor: 'pointer',
               }}
               onClick={mode === 'animating' ? () => {} : handleImageClick}
-              transition={'.5s transform cubic-bezier(.96,.15,.19, .89)'}
+              transition={TRANSITION}
               transform={`translate(${imagesPosition[i].x}px, ${imagesPosition[i].y}px)`}
             />
           );

@@ -2,6 +2,10 @@ import { extendTheme } from '@chakra-ui/react';
 
 const colors = {
   black: '#333333',
+  procrastination: {
+    second: 'rgba(152, 11, 202, .22)',
+    gray: '#888888',
+  },
 };
 
 const components = {

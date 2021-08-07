@@ -24,7 +24,7 @@ export const HeadController: NextPage<HeaderControllerProps> = ({
       <meta charSet="utf-8" />
       <meta
         name="viewport"
-        content="width=device-width, initial-scale=1, user-scalable=no, user-scalable=0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
       />
       <title>{title ? `${title} | ${appName}` : appName}</title>
       <meta

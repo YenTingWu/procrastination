@@ -89,3 +89,8 @@ export interface User {
   avatar?: string;
   calendars: Calendar[];
 }
+
+export enum SocialLoginType {
+  GOOGLE = 'google',
+  TWITTER = 'twitter',
+}

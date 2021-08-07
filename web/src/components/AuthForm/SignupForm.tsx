@@ -4,12 +4,14 @@ import axios from 'axios';
 import { useFormik, FormikHelpers } from 'formik';
 import { Flex, Box } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/button';
-import { StyledForm, SocialLoginType } from './SigninForm';
+import { StyledForm } from './SigninForm';
+import { SocialLoginType } from '@types';
 import { useDebounceCallback } from '@hooks/useDebounceCallback';
 import { FormLabelInputUI } from '@components/Form/FormLabelInputUI';
 import { LogoButton } from '@components/Form/LogoButton';
 import { GoogleIcon } from '@components/Icon';
 import { API_BASE_URL } from '../../config';
+import { handleSocialLogin as onSocialLogin } from '@lib/handleSocialLogin';
 
 type SignUpFormInput = {
   email: string;
@@ -26,15 +28,7 @@ interface SignUpFormProps {}
 
 export const SignUpForm: React.FC<SignUpFormProps> = () => {
   const handleSocialLoginLogin = useDebounceCallback(
-    async (socialLoginType: SocialLoginType) => {
-      const res = await axios({
-        baseURL: API_BASE_URL,
-        url: `/auth/${socialLoginType}/web`,
-        method: 'POST',
-      });
-
-      window.location.href = res.data.url;
-    },
+    async (socialLoginType: SocialLoginType) => onSocialLogin(socialLoginType),
     400,
     []
   );

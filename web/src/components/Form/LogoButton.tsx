@@ -1,10 +1,10 @@
 import React from 'react';
 import { Text } from '@chakra-ui/layout';
-import { Button } from '@chakra-ui/button';
+import { Button, ButtonProps } from '@chakra-ui/button';
 
-export interface LogoButtonProps {
+export interface LogoButtonProps extends ButtonProps {
   title: string;
-  logo: JSX.Element;
+  logo?: JSX.Element;
   onClick: () => void;
   styles?: JSX.IntrinsicAttributes;
 }
@@ -20,6 +20,7 @@ export const LogoButton: React.FC<LogoButtonProps> = ({
   logo,
   onClick,
   styles,
+  ...buttonProps
 }) => {
   return (
     <Button
@@ -37,6 +38,7 @@ export const LogoButton: React.FC<LogoButtonProps> = ({
         background: 'white',
         transform: 'rotate(2deg)',
       }}
+      {...buttonProps}
       {...styles}
     >
       {logo}

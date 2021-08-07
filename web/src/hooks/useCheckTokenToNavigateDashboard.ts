@@ -4,7 +4,8 @@ import { useTokenStore } from '@globalStore/client/useTokenStore';
 
 export const useCheckTokenToNavigateDashboard = () => {
   const hasTokens = useTokenStore((s) => !!s.accessToken);
-  const { push } = useRouter();
+  const router = useRouter();
+  const { push } = router;
   const [isCheckedToken, setCheckedToken] = useState<boolean>(false);
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export const useCheckTokenToNavigateDashboard = () => {
   }, [push]);
 
   return {
-    push,
+    ...router,
     hasTokens,
     isCheckedToken,
   };
