@@ -114,14 +114,21 @@ export const DroppableList: React.FC<DroppableListProps> = ({
   // Media Query
   const height = useTypeSafeBreakpointValue({
     default: 250,
-    lg: 300,
+    '2xl': 500,
+    lg: 400,
     xl: 400,
   });
 
-  const width = useTypeSafeBreakpointValue({ default: 200, xl: 250, lg: 200 });
+  const width = useTypeSafeBreakpointValue({
+    '2xl': 300,
+    xl: 220,
+    lg: 200,
+    default: 200,
+  });
   const paddingHorizon = useTypeSafeBreakpointValue({
     default: '.1rem',
-    xl: '.75rem',
+    '2xl': '.75rem',
+    xl: '.35rem',
   });
 
   const categoryTitleFontSize = useTypeSafeBreakpointValue({

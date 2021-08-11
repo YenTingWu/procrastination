@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { useSaveTokenFromQueryString } from '@hooks/useSaveTokenFromQueryString';
 import { HeadController } from '@components/HeadController';
 import { LoadingUI } from '@components/UI/LoadingUI';
@@ -7,10 +8,10 @@ import { PageDefaultLayout } from '@components/Layout/PageDefaultLayout';
 import { useCheckTokenToNavigateDashboard } from '@hooks/useCheckTokenToNavigateDashboard';
 
 export default function Home({}) {
-  useSaveTokenFromQueryString();
+  const { hasParams } = useSaveTokenFromQueryString();
   const { isCheckedToken } = useCheckTokenToNavigateDashboard();
 
-  if (!isCheckedToken) {
+  if (!isCheckedToken || hasParams) {
     return <LoadingUI />;
   }
 

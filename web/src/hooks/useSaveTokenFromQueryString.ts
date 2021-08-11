@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useTokenStore } from '@globalStore/client/useTokenStore';
+import isEmpty from 'lodash/fp/isEmpty';
 
 export const useSaveTokenFromQueryString = () => {
   const { query: params, push } = useRouter();
@@ -22,4 +23,8 @@ export const useSaveTokenFromQueryString = () => {
       setTimeout(() => push('/dashboard'), 100);
     }
   }, [params, push]);
+
+  return {
+    hasParams: !isEmpty(params),
+  };
 };

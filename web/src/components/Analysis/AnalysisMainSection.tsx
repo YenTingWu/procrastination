@@ -9,8 +9,12 @@ import { Event } from '@types';
 
 type Domain = [Date, Date];
 
+const COMPLETED_TIME_INDEX = 2;
+
 function getCompletedTime(timestamp: (string | Date)[]) {
-  return new Date(timestamp[timestamp.length - 1]);
+  const completedTime = new Date(timestamp[COMPLETED_TIME_INDEX]);
+  if (!completedTime) throw new Error();
+  return completedTime;
 }
 
 function useCompletedTimeList(events: Event[]) {
@@ -28,6 +32,7 @@ export const AnalysisMainSection: React.FC<AnalysisMainSection> = ({
   events,
 }) => {
   const completedTime = useCompletedTimeList(events);
+
   const [domain, setDomain] = useState<Domain>([
     min(completedTime),
     max(completedTime),
@@ -40,8 +45,12 @@ export const AnalysisMainSection: React.FC<AnalysisMainSection> = ({
   const filteredEvents = useMemo(
     () =>
       events.filter(({ timestamp }) => {
-        const completedTime = getCompletedTime(timestamp);
-        return completedTime >= domain[0] && completedTime <= domain[1];
+        const completedTime = getCompletedTime(timestamp).getTime();
+
+        return (
+          completedTime >= domain[0].getTime() &&
+          completedTime <= domain[1].getTime()
+        );
       }),
     [events, domain]
   );
@@ -50,11 +59,11 @@ export const AnalysisMainSection: React.FC<AnalysisMainSection> = ({
     <Flex
       flexDir="column"
       alignItems="center"
-      pt={['3.5rem', '3.5rem', '3.5rem', '3.5rem', '7rem']}
       flex="1"
       minH="100vh"
       h="100vh"
       overflow="scroll"
+      justifyContent="center"
     >
       <BidirectionalSlider
         width={'40%'}

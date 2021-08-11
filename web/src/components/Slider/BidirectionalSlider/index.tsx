@@ -9,6 +9,7 @@ import React, {
 import { getIndices } from './lib/getIndices';
 import { getValues } from './lib/getValues';
 import { getLabel } from './lib/getLabel';
+import endOfDay from 'date-fns/fp/endOfDay';
 
 import styleModule from './BidirectionalSlider.module.css';
 
@@ -106,7 +107,10 @@ export const BidirectionalSlider: React.FC<BidirectionalSliderProps> = ({
   // Get min and max values when their state changes
   useEffect(() => {
     onChange &&
-      onChange([valuesOfDomain[minVal], valuesOfDomain[maxVal]] as DomainType);
+      onChange([
+        valuesOfDomain[minVal],
+        endOfDay(valuesOfDomain[maxVal]),
+      ] as DomainType);
   }, [biDirSliderDomain, onChange]);
 
   const newInputWidth = width ? { width: getAppropriateWidth(width) } : {};
