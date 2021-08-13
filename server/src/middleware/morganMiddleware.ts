@@ -1,4 +1,4 @@
-import morgan from 'morgan';
+const morgan = require('morgan');
 import chalk from 'chalk';
 
 export const morganMiddleware = morgan(function (tokens, req, res) {
