@@ -13,4 +13,4 @@ COPY . /app
 # replace ormconfig.json with ormconfig.docker.json
 COPY ormconfig.docker.json /app/ormconfig.json
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start--prod"]
