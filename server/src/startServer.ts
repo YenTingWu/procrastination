@@ -43,7 +43,19 @@ export default async () => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
 
-  const connection = await createConnection();
+  let retires = 5;
+  let connection;
+
+  try {
+    connection = await createConnection();
+  } catch (err) {
+    console.log(err);
+    retires -= 1;
+    // wait for 5 seconds
+    await new Promise((res) => {
+      setTimeout(res, 5000);
+    });
+  }
 
   startTwitterPassport(connection, passport);
 
