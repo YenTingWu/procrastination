@@ -88,8 +88,9 @@ export default async () => {
   https
     .createServer(
       {
-        key: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'server.key')),
-        cert: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'server.cert')),
+        key: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'key.pem')),
+        cert: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'cert.pem')),
+        passphrase: '1234',
       },
       app
     )
