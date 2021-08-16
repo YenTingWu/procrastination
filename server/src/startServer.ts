@@ -1,5 +1,8 @@
 import 'reflect-metadata';
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import https from 'https';
 import session from 'express-session';
 import passport from 'passport';
 // import { createProxyMiddleware } from 'http-proxy-middleware';
@@ -43,20 +46,21 @@ export default async () => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
 
-  let retires = 5;
+  let retries = 5;
   let connection;
 
-  try {
-    connection = await createConnection();
-  } catch (err) {
-    console.log(err);
-    retires -= 1;
-    // wait for 5 seconds
-    await new Promise((res) => {
-      setTimeout(res, 5000);
-    });
+  if (retries > 0) {
+    try {
+      connection = await createConnection();
+    } catch (err) {
+      console.log(err);
+      retries -= 1;
+      // wait for 5 seconds
+      await new Promise((res) => {
+        setTimeout(res, 5000);
+      });
+    }
   }
-
   startTwitterPassport(connection, passport);
 
   app.use(passport.initialize());
@@ -81,9 +85,21 @@ export default async () => {
   app.use('/user', userRouter);
   app.use('/event', eventRouter);
 
-  app.listen(PORT, () => {
-    console.log(`Server is running on PORT ${PORT}`);
-  });
+  https
+    .createServer(
+      {
+        key: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'server.key')),
+        cert: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'server.cert')),
+      },
+      app
+    )
+    .listen(PORT, () => {
+      console.log(`Server is running on PORT ${PORT}`);
+    });
+
+  // app.listen(PORT, () => {
+  //   console.log(`Server is running on PORT ${PORT}`);
+  // });
 
   return app;
 };

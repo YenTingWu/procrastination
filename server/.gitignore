@@ -8,3 +8,7 @@ package-lock.json
 pgdata
 
 .env
+.env.dev
+.env.prod
+
+ssl
