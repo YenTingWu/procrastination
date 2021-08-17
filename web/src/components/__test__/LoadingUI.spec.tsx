@@ -1,5 +1,5 @@
 import { render, screen } from './test-utils';
-import { LoadingUI } from '../LoadingUI';
+import { LoadingUI } from '../UI/LoadingUI';
 
 test('should render correctly', () => {
   render(<LoadingUI />);
