@@ -3,7 +3,7 @@ import 'dotenv-safe/config';
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 export const GOOGLE_REDIRECT_URL = process.env.GOOGLE_REDIRECT_URL || '';
-export const CLIENT_BASE_URL = 'https://www.procrastination.cool/';
+export const CLIENT_BASE_URL = 'https://www.procrastination.cool';
 export const TWITTER_API_KEY = process.env.TWITTER_API_KEY;
 export const TWITTER_API_SECRET = process.env.TWITTER_API_SECRET;
 export const TWITTER_CALLBACK = process.env.TWITTER_CALLBACK;
