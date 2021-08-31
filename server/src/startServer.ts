@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import express from 'express';
-import fs from 'fs';
+// import fs from 'fs';
 import path from 'path';
-import https from 'https';
+// import https from 'https';
 import session from 'express-session';
 import passport from 'passport';
 // import { createProxyMiddleware } from 'http-proxy-middleware';
@@ -86,22 +86,22 @@ export default async () => {
   app.use('/user', userRouter);
   app.use('/event', eventRouter);
 
-  https
-    .createServer(
-      {
-        key: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'key.pem')),
-        cert: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'cert.pem')),
-        passphrase: '1234',
-      },
-      app
-    )
-    .listen(PORT, () => {
-      console.log(`Server is running on PORT ${PORT}`);
-    });
+  // https
+  //   .createServer(
+  //     {
+  //       key: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'key.pem')),
+  //       cert: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'cert.pem')),
+  //       passphrase: '1234',
+  //     },
+  //     app
+  //   )
+  //   .listen(PORT, () => {
+  //     console.log(`Server is running on PORT ${PORT}`);
+  //   });
 
-  // app.listen(PORT, () => {
-  //   console.log(`Server is running on PORT ${PORT}`);
-  // });
+  app.listen(PORT, () => {
+    console.log(`Server is running on PORT ${PORT}`);
+  });
 
   return app;
 };
