@@ -45,6 +45,7 @@ export default async () => {
   );
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
+  app.use(express.static(path.join(__dirname, '..', 'public')));
 
   let retries = 5;
   let connection;
@@ -90,7 +91,7 @@ export default async () => {
       {
         key: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'key.pem')),
         cert: fs.readFileSync(path.join(__dirname, '..', 'ssl', 'cert.pem')),
-        // passphrase: '1234',
+        passphrase: '1234',
       },
       app
     )
