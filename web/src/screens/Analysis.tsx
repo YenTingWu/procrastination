@@ -30,7 +30,11 @@ export function Analysis() {
         description="This is a procrastination auth page"
       />
       <NavigationSideBar placeholder={displayName} avatar={avatar} />
-      <AnalysisMainSection events={completedEvents} />
+      {completedEvents.length > 0 ? (
+        <AnalysisMainSection events={completedEvents} />
+      ) : (
+        'Create your completed events'
+      )}
     </AppDefaultLayoutDesktop>
   );
 }
