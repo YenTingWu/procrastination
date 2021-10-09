@@ -8,7 +8,7 @@ export const Footer = () => (
         copyright &copy; {new Date().getFullYear()} Cool Procrastination
       </Text>
       <Flex w="200px" justifyContent="space-around">
-        <Link target="_blank" href="https://github.com/YenTingWu">
+        <Link target="_blank" href="https://github.com/YenTingWu/procrastination">
           <FaGithub color="white" size="28px" />
         </Link>
       </Flex>

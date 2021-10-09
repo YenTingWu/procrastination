@@ -9,11 +9,6 @@ import {
   postGoogleAuthentication,
   getGoogleAuthenticationCallback,
 } from '../controllers/auth/googleOAuth2';
-import {
-  postTwitterOAuth,
-  getTwitterOAuthCallback,
-  getRedirectBackToEntryPage,
-} from '../controllers/auth/twitterOauth';
 
 /**
  * Social Sign-up
@@ -37,17 +32,7 @@ router.get('/refresh_token', getRefreshToken);
 router.post('/login', postTraditionalLogin);
 router.post('/logout', postSignOut);
 router.post('/register', postTraditionalRegister);
-router.post('/twitter/web', postTwitterOAuth);
 router.post('/google/web', postGoogleAuthentication);
-
-/** TODO:
- * create tokens for client-Oauth after twitter auth callback
- */
-router.get(
-  '/twitter/web/oauthcallback',
-  getTwitterOAuthCallback,
-  getRedirectBackToEntryPage
-);
 
 router.get('/google/web/oauth2callback', getGoogleAuthenticationCallback);
 

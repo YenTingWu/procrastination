@@ -4,8 +4,6 @@ import fs from 'fs';
 import path from 'path';
 import https from 'https';
 import session from 'express-session';
-import passport from 'passport';
-// import { createProxyMiddleware } from 'http-proxy-middleware';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { createConnection } from 'typeorm';
@@ -14,7 +12,6 @@ import { CLIENT_BASE_URL, SESSION_SECRET } from './config';
 import authRouter from './routes/auth';
 import userRouter from './routes/user';
 import eventRouter from './routes/event';
-import startTwitterPassport from './configStarter/startTwitterPassport';
 
 export default async () => {
   const PORT = process.env.PORT || 5000;
@@ -28,7 +25,6 @@ export default async () => {
       credentials: true,
     })
   );
-  // app.use('/auth', createProxyMiddleware(proxyOptions));
 
   app.use(function (_, res, next) {
     res.header('Access-Control-Allow-Origin', CLIENT_BASE_URL);
@@ -48,11 +44,10 @@ export default async () => {
   app.use(express.static(path.join(__dirname, '..', 'public')));
 
   let retries = 5;
-  let connection;
 
   if (retries > 0) {
     try {
-      connection = await createConnection();
+      await createConnection();
     } catch (err) {
       console.log(err);
       retries -= 1;
@@ -62,9 +57,6 @@ export default async () => {
       });
     }
   }
-  startTwitterPassport(connection, passport);
-
-  app.use(passport.initialize());
 
   app.get('/', (_, res) => {
     res.send('Hello this is an app');

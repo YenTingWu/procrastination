@@ -12,7 +12,7 @@ export const getRefreshToken = async (req: Request, res: Response) => {
     return res.json({ ok: false, accessToken: '' });
   }
 
-  let payload: any;
+  let payload;
 
   try {
     payload = verify(token, REFRESH_TOKEN_SECRET);
