@@ -1,7 +1,6 @@
-import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToOne } from 'typeorm';
 import { BaseEventEntity } from './module/BaseEventEntity';
 import { Calendar } from './Calendar';
-import { Field } from './Field';
 
 @Entity('events')
 export class Event extends BaseEventEntity {
@@ -21,7 +20,4 @@ export class Event extends BaseEventEntity {
 
   @ManyToOne(() => Calendar, (calendar) => calendar.events, { cascade: true })
   calendar: Calendar;
-
-  @OneToMany(() => Field, (e) => e.eventId)
-  fields: Field[];
 }

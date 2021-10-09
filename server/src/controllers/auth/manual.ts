@@ -16,7 +16,7 @@ import { sendRefreshToken } from '../../lib/sendRefreshToken';
 export const postTraditionalLogin = async (req: Request, res: Response) => {
   const { email, password } = req.query;
 
-  let user = await User.findOne({ email: email as string });
+  const user = await User.findOne({ email: email as string });
 
   if (!user) {
     res.status(401).send('not authenticated');

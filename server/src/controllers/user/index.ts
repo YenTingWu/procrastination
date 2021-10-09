@@ -4,7 +4,6 @@ import { getRepository } from 'typeorm';
 import { User } from '../../entity/User';
 import { Calendar } from '../../entity/Calendar';
 import { Event } from '../../entity/Event';
-// import { createTodos } from '../__mock__/createTodos';
 
 export const getUserData = async (_: Request, res: Response) => {
   const { payload } = res.locals;
@@ -32,7 +31,7 @@ export const getUserData = async (_: Request, res: Response) => {
     if (user.calendars.length === 0) {
       const now = new Date();
 
-      let newEvent = await Event.create({
+      const newEvent = await Event.create({
         name: 'New event',
         type: 'event',
         description: 'This is an event example',
@@ -47,7 +46,7 @@ export const getUserData = async (_: Request, res: Response) => {
       // //TODO: delete when the create-todo functionality is implemented
       // const todos = await createTodos();
 
-      let newCalendar = await Calendar.create({
+      const newCalendar = await Calendar.create({
         name: 'The new calendar',
         createdAt: now,
         modifiedAt: now,

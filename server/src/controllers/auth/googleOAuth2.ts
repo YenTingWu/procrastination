@@ -12,7 +12,7 @@ import { getValidName } from '../../lib/getValidName';
 import { createAccessToken, createRefreshToken } from '../../lib/createAuth';
 import { sendRefreshToken } from '../../lib/sendRefreshToken';
 
-let oauth2Client = new google.auth.OAuth2(
+const oauth2Client = new google.auth.OAuth2(
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   GOOGLE_REDIRECT_URL
@@ -27,7 +27,7 @@ let oauth2Client = new google.auth.OAuth2(
  */
 
 export const postGoogleAuthentication = (_req: Request, res: Response) => {
-  let scopes = [
+  const scopes = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
   ];
