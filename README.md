@@ -17,7 +17,7 @@ I have never been so happy in study time before. In this period, I tried bunch o
 
 ---
 
-# Tech Stack
+## Tech Stack
 
 I considered my tech stack based on one thing only:
 
