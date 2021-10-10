@@ -17,7 +17,7 @@ I have never been so happy in study time before. In this period, I tried bunch o
 
 ---
 
-## Tech Stack
+### Tech Stack
 
 I considered my tech stack based on one thing only:
 
@@ -28,7 +28,7 @@ I considered my tech stack based on one thing only:
 ---
 
 
-# Final Thoughts
+## Final Thoughts
 
 It was a fun experience to build an entire app from scratch, from tech stack selection and the layout and UI design, to actually the app developement. Although it really took me most of time being confused, I've not only reached the goal I set before starting:
 
@@ -57,7 +57,7 @@ Apart from things mentioned above, I highlight out few points I must do better n
 
 ---
 
-# What's Next
+## What's Next
 
 There are bunch of new things in my list, including [Three.js](https://threejs.org/), [TensorFlow](https://github.com/tensorflow/tfjs) and [canvas api](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Also, after enrolling in [Stanford - CS 253 Web Security](https://web.stanford.edu/class/cs253), web security is also a part that I'm really intersted in.
 
