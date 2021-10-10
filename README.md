@@ -24,3 +24,42 @@ I considered my tech stack based on one thing only:
 - **Unexperienced** - I wanted to try new libraries I had never used in a project before.
 
 - **Cool** - It should fulfill the cool kid's spirit inside the very bottom of my heart.
+
+---
+
+
+# Final Thoughts
+
+It was a fun experience to build an entire app from scratch, from tech stack selection and the layout and UI design, to actually the app developement. Although it really took me most of time being confused, I've not only reached the goal I set before starting:
+
+- Build an app with server and client sides
+- Build authentication with JWT and Google API
+
+but I've also gone through the whole process in a web developement on my own, after leaving the first job. This really helps me rethink about how important every role playing in a project is.
+
+Apart from things mentioned above, I highlight out few points I must do better next time:
+
+- **Goal Setting**
+
+  Who is your target? What problem do you want to solve? How do you solve it?
+
+  These are the most important questions I ask myselft before starting a project. I did do this time, but I gave myself too many anwsers. It was too messing. The project ended up neither fish or fowl for clients who are using it.
+
+  I have to remind future me of making the goal **more simple** and **more specific**.
+
+- **Design**
+
+  A great design pattern makes developement smoother and more frequent. However, there is no a pattern that fits in every situation. I have to study more cases and learn the ability to put the appropiate solution into the specific situation.
+
+- **Comments**
+
+  A comment is helpful for other people who are reading your code to understand your logic. Even though it is my own project, it also the best practice for me to wrtie the comment. It can also make future me know what I wrote before.
+
+---
+
+# What's Next
+
+There are bunch of new things in my list, including [Three.js](https://threejs.org/), [TensorFlow](https://github.com/tensorflow/tfjs) and [canvas api](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Also, after enrolling in [Stanford - CS 253 Web Security](https://web.stanford.edu/class/cs253), web security is also a part that I'm really intersted in.
+
+I might keep digging into knowledge of cybersecurity and play around with frontend libraries recently.
+
