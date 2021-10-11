@@ -1,5 +1,7 @@
 # Procrastination
 
+## Tech Stack
+
 ## Why
 
 During my self-taught period and my last job, I learned and experienced UI techniques, and also built a fundamental mindset of how to develop a comprehensive client-side applications. However, when talking about the server side, I had only a slightly understanding. I was confused about the detail of how both sides communicate; felt frustrated when cors problems showed up somehow, which took me tons of time to find out that all I needed to do was to add a fucking one-line code into the backend codebase and the error solved; was alienated when other people were talking about api gateway, docker and other backend stuff. These experiences cultivated my curiosity and pushed me to learn more things.
