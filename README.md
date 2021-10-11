@@ -1,6 +1,34 @@
 # Procrastination
 
-## Tech Stack
+## Stack I use in this project
+
+### Front End 
+
+- React 
+- Next 
+- chakra 
+- storybook 
+- React query 
+- zustand 
+- React-beautiful-dnd
+- D3
+- Jest
+- React Testing Library
+
+### Back End & Cloud
+
+- Node
+- Express
+- TypeOrm
+- PostgreQL
+- Docker
+- Droplets
+
+### Other
+
+- Typescript
+- [Whimsical](https://whimsical.com/)
+- Figma
 
 ## Why
 
